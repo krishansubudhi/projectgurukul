@@ -12,7 +12,7 @@ from llama_index.readers.base import BaseReader
 from llama_index.schema import Document
 import pandas as pd
 
-# logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+# logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 # logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 dotenv.load_dotenv('.env')
@@ -62,5 +62,5 @@ if len(sys.argv) <2:
 query = ' '.join(sys.argv[1:])
 print("Q:" ,query)
 
-response = query_engine.query(query + "Also, Mention the chapters, verses and shlokas.")
+response = query_engine.query(query + " Also, Mention the source, shlokas and logic behind the answer. Properly format your answer using markdowns")
 print("A:", response)
