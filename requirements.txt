@@ -1,3 +1,7 @@
 llama-index
 python-dotenv
 pandas
+pypdf
+transformers[torch]
+InstructorEmbedding
+sentence_transformers

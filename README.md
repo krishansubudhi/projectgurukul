@@ -7,7 +7,7 @@ Project Description Slides: https://1drv.ms/p/s!ApUg6qGY-u_cifwwQzGW0KLRbch_CA?e
 
 ## Conda Environment
 ```
-conda create -n gurukul
+conda create -n gurukul python=3.11
 conda activate gurukul
 conda install pip
 pip install -r requirements.txt
@@ -32,6 +32,12 @@ https://www.holy-bhagavad-gita.org/chapter/1/verse/1
 https://www.kaggle.com/datasets/yashnarnaware/bhagavad-gita-versewise
 
 
+# Test
+
+```
+pip install pytest
+python -m pytest
+```
 # Run
 
 ```
