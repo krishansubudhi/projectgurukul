@@ -98,22 +98,6 @@ The story of the king and the sadhu is a beautiful example of how faith works. T
 Sources:
 
 Source [1]: 'chapter': 'Chapter 9', 'verse': 'Verse 3'
-
-# Hindu Dharma and Supreme God
-
-Hindu Dharma refers to the prescribed actions that are conducive to our spiritual growth and progress. It is the path that leads us towards enlightenment and liberation from the cycle of birth and death. The Supreme God in Hinduism is known as Brahman, and he is considered to be the ultimate reality and the source of all existence.
-
-The concept of Brahman is central to Hinduism. It is believed that Brahman is formless, eternal, and infinite. He is the creator, sustainer, and destroyer of the universe. Brahman is also known as the Supreme Being, the Absolute, and the Consciousness.
-
-The source of Hindu Dharma is the Vedas, which are the oldest scriptures of Hinduism. The Vedas contain hymns, rituals, and philosophical teachings that guide the followers of Hinduism. The Vedas are considered to be the word of God and are the foundation of Hindu philosophy and religion.
-
-The logic behind the concept of Brahman is based on the idea of unity and diversity. Brahman is the ultimate reality that is present in everything and everyone. It is the source of all diversity and the reason for the existence of different forms and beings. Brahman
-
-
-Sources:
-
-Source [1]: 
-{'chapter': 'Chapter 4', 'verse': 'Verse 7', 'file_path': 'data/gita/data/bhagavad_gita.csv', 'file_name': 'bhagavad_gita.csv', 'file_type': 'text/csv', 'file_size': 4966724, 'creation_date': '2024-01-07', 'last_modified_date': '2024-01-07', 'last_accessed_date': '2024-01-10'}
 ```
 
 Note: Answers may change on subsequent calls even for same query.
