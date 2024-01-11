@@ -2,6 +2,16 @@
 Unveiling the Knowledge of Hindu Scriptures
 
 Project Description Slides: https://1drv.ms/p/s!ApUg6qGY-u_cifwwQzGW0KLRbch_CA?e=08GoD4
+
+This project builds a QnA bot where one can ask questions and fetch answers from the hindu scriptures.
+Currently only Bhagavad Gita is added. In future, more data sources will be added.
+
+# Contribute
+
+Join the discord communit https://discord.gg/dsHRPwQH to discuss, suggest ideas, volunteer or just to say hi.
+
+You can contribute by testing this library, adding more scriptures, creating PRs, suggesting features, fixing bugs etc. 
+
 # Setup instructions
 
 
@@ -13,16 +23,20 @@ conda install pip
 pip install -r requirements.txt
 ```
 
-## Create OpenAI API Key
+## Create OpenAI API Key [Optional]
 https://docs.llamaindex.ai/en/stable/getting_started/installation.html#important-openai-environment-setup
 
+This might require credit card and open AI API subscription. If you do not want to subscribe to OpenAI yet, you can avoid this.
 
 ## .env
 - Create a file called `.env` in the project root.
 - Write these in that file and save.
   ```
   OPENAI_API_KEY=<Your OpenAI Key>
+  PYTHONPATH=<Path to the root folder of this project>
   ```
+
+`OPENAI_API_KEY` is optional. However, rember to pass `--offline` option to the `starter.py` script. More on that below
 
 # Data
 Data is downloaded from a kaggle repository.
@@ -40,23 +54,66 @@ python -m pytest
 ```
 # Run
 
+## Online OpenAI models
 ```
-python starter.py "Why should Arjuna fight with his relatives?"
+python starter.py --question "If god can't be seen, how can we trust him?"
+```
+**Q: If god can't be seen, how can we trust him?**
+
+A: God cannot be directly seen with our physical senses. However, this does not mean that we cannot trust in God's existence. Trusting in God requires faith, which is an inherent aspect of human nature. In the Bhagavad Gita, it is explained that faith is necessary to embark on the spiritual path and to perceive God. Just as we believe in many things in the world without direct perception, such as historical events or reports from different sources, we can also have faith in the existence of God.
+
+The Sanskrit shloka from Chapter 9, Verse 3 of the Bhagavad Gita states: "अश्रद्दधाना: पुरुषा धर्मस्यास्य परन्तप |अप्राप्य मां निवर्तन्ते मृत्युसंसारवर्त्मनि || 3||" (English Meaning: In the last two verses, Shree Krishna promised knowledge and then qualified it with eight merits. It is mentioned here as “this dharma,” or the path of loving devotion to God. No matter how wonderful the knowledge and how effective the path, it remains useless to one who refuses to walk on it.)
+
+The logic behind trusting in God without direct perception is also explained in the context. Just as a judge delivers judgment based on events that took place in the past, or a president administers a country based on reports from various sources, faith is required in every step of our material activities. Similarly, faith is required in the spiritual realm as well. The context provides the example of a story where a king is asked to believe in the presence of butter in milk, even though it cannot be directly seen. The story illustrates that just because something cannot be immediately perceived, it does not mean it does not exist. There is a process for perceiving God, and if we are willing to have faith and follow the process, we can attain direct perception of God and become God-realized.
+
+Source: Bhagavad Gita, Chapter 9, Verse 3
+
+
+Sources:
+
+Source [1]: 'verse': ' Verse 3', 'chapter': 'Chapter 9'
+
+Source [2]: 'verse': ' Verse 2', 'chapter': 'Chapter 17'
+
+Source [3]: 'verse': ' Verse 11', 'chapter': 'Chapter 15'
+
+
+
+## Offline Local models
+
+If you do not have OpenAI subscription, use this. This will have lower accuracy and slow response. Good thing is it does not require any subscription and internet connection - ideal candidate for testing and development.
+If you have GPU, results will be faster.
+
+```
+python starter.py --question "If god can't be seen, how can we trust him?" --offline
 ```
 
-You should see answers like:
-```
-Q: Why should Arjuna fight with his relatives?
-A: Arjuna should fight with his relatives because it is his duty as a warrior to fight in the war. In the Bhagavad Gita, Arjuna realizes that all the warriors on the battlefield, ready to shed blood, are his own relatives, friends, and family. He is filled with remorse and fearful of performing his duty of fighting this war due to his attachment towards his bodily relatives. However, he becomes forgetful of his spiritual existence and the fact that he is not just the body. His affection for his bodily relatives blinds his consciousness. The materialistic concept considers oneself to be only the body, emotionally attached to all its bodily relatives. This attachment is based on ignorance and carries with it the burdens of life like pain, sorrow, grief, and death. Only the death of the physical body can end these materialistic attachments. However, we are more than just the physical body; our eternal souls are beyond life and death. Tangled in the various attachments of the material world, we keep forgetting that the Supreme Lord is our only permanent relative. He is the Father, Mother, Friend, Master, and Beloved of our soul.
+**Q: If god can't be seen, how can we trust him?**
 
-The chapters, verses, and shlokas mentioned in the context are as follows:
-- Chapter 1
-- Verse 28
-- Shloka: अर्जुन उवाच |दृष्ट्वेमं स्वजनं कृष्ण युयुत्सुं समुपस्थितम् || 28||सीदन्ति मम गात्राणि मुखं च परिशुष्यति |
+A: The question is a common one, and it is often asked by people who are skeptical about the existence of God. The answer to this question is not as simple as it may seem. The fact is that we believe in many things in the world too, without direct perception of them. A judge delivers judgment upon a case concerning an event that took place many years in the past. If the judge adopted the philosophy of believing only what he or she had directly experienced, then the entire legal system would fail. A President administers a country on the basis of reports from all over the country. It is impossible for him to visit and see all the villages and cities within his domain. Now, if he was not willing to believe these reports, on the grounds that he had no direct perception of what was happening, how would he be able to administer the whole country? So, even in material activities, faith is required at every step. The Bible states this very nicely: “We walk by faith, and not by sight.” (2 Corinthians 5:7)
 
-- Chapter 1
-- Verses 36-37
-- Shlokas: निहत्य धार्तराष्ट्रान्न: का प्रीति: स्याज्जनार्दन |पापमेवाश्रयेदस्मान्हत्वैतानाततायिन: || 36 || तस्मान्नार्हा वयं हन्तुं धार्तराष्ट्रान्स्वबान्धवान् |स्वजनं हि कथं हत्वा सुखिन: स्याम माधव || 37||
+The story of the king and the sadhu is a beautiful example of how faith works. The king believed in the existence of butter in the milk because he had faith that
+
+
+Sources:
+
+Source [1]: 'chapter': 'Chapter 9', 'verse': 'Verse 3'
+
+# Hindu Dharma and Supreme God
+
+Hindu Dharma refers to the prescribed actions that are conducive to our spiritual growth and progress. It is the path that leads us towards enlightenment and liberation from the cycle of birth and death. The Supreme God in Hinduism is known as Brahman, and he is considered to be the ultimate reality and the source of all existence.
+
+The concept of Brahman is central to Hinduism. It is believed that Brahman is formless, eternal, and infinite. He is the creator, sustainer, and destroyer of the universe. Brahman is also known as the Supreme Being, the Absolute, and the Consciousness.
+
+The source of Hindu Dharma is the Vedas, which are the oldest scriptures of Hinduism. The Vedas contain hymns, rituals, and philosophical teachings that guide the followers of Hinduism. The Vedas are considered to be the word of God and are the foundation of Hindu philosophy and religion.
+
+The logic behind the concept of Brahman is based on the idea of unity and diversity. Brahman is the ultimate reality that is present in everything and everyone. It is the source of all diversity and the reason for the existence of different forms and beings. Brahman
+
+
+Sources:
+
+Source [1]: 
+{'chapter': 'Chapter 4', 'verse': 'Verse 7', 'file_path': 'data/gita/data/bhagavad_gita.csv', 'file_name': 'bhagavad_gita.csv', 'file_type': 'text/csv', 'file_size': 4966724, 'creation_date': '2024-01-07', 'last_modified_date': '2024-01-07', 'last_accessed_date': '2024-01-10'}
 ```
 
 Note: Answers may change on subsequent calls even for same query.

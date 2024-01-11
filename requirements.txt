@@ -5,3 +5,4 @@ pypdf
 transformers[torch]
 InstructorEmbedding
 sentence_transformers
+argparse
