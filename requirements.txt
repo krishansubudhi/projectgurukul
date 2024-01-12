@@ -6,3 +6,4 @@ transformers[torch]
 InstructorEmbedding
 sentence_transformers
 argparse
+streamlit

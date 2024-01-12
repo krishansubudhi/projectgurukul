@@ -8,7 +8,7 @@ Currently only Bhagavad Gita is added. In future, more data sources will be adde
 
 # Contribute
 
-Join the discord communit https://discord.gg/dsHRPwQH to discuss, suggest ideas, volunteer or just to say hi.
+Join the discord community https://discord.gg/dsHRPwQH to discuss, suggest ideas, volunteer or just to say hi.
 
 You can contribute by testing this library, adding more scriptures, creating PRs, suggesting features, fixing bugs etc. 
 
