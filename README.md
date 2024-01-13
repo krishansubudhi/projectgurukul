@@ -54,6 +54,10 @@ python -m pytest
 ```
 # Run
 
+```
+python starter.py --question "<Your question>" [--offline] [--debug]
+```
+
 ## Online OpenAI models
 ```
 python starter.py --question "If god can't be seen, how can we trust him?"
@@ -98,8 +102,22 @@ The story of the king and the sadhu is a beautiful example of how faith works. T
 Sources:
 
 Source [1]: 'chapter': 'Chapter 9', 'verse': 'Verse 3'
-```
+
 
 Note: Answers may change on subsequent calls even for same query.
 
+## Debug
+Use the `--debug` flag. This logs the actual prompt and context passed to the llms.
+
+Example:
+```
+python starter.py --question "Who was arjuna?" --offline --debug
+```
+
+# Website
+
+## Run locally
+```
+Start streamlit run website/app.py
+```
 

@@ -15,9 +15,6 @@ import os.path
 from projectgurukul.readers import CSVReader
 dotenv.load_dotenv('.env')
 
-# logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-# logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
-
 
 def load_gita(directory):
     def preprocess(row):
@@ -44,7 +41,7 @@ def setup_service_context(args):
 
         instructor_embeddings = embedders.InstructorEmbeddings(
             embed_batch_size=1)
-        llm = llms.get_phi2_llm()
+        llm = llms.get_tinyllama_llm()# llms.get_phi2_llm()#
         service_context = ServiceContext.from_defaults(
             chunk_size=512, llm=llm, context_window=2048, embed_model=instructor_embeddings)
         set_global_service_context(service_context)
@@ -65,8 +62,17 @@ def main():
                         help='the question to process')
     parser.add_argument('--offline', action='store_true',
                         help='use local models')
+    
+    parser.add_argument('--debug', action='store_true',
+                        help='print debug logs')
 
     args = parser.parse_args()
+
+
+    if args.debug:
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+        logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+
     storage_dir, similarity_top_k = setup_service_context(args)
 
     BOOK_DIR = "./data/gita/"

@@ -1,6 +1,7 @@
 from llama_index.llms import HuggingFaceLLM, ChatMessage
 from llama_index.prompts import PromptTemplate
 import torch
+import logging
 
 def get_device_and_dtype():
     if torch.backends.mps.is_available():
@@ -21,7 +22,9 @@ def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256):
                     {"role": message.role.value, "content": message.content}
                     for message in messages
                 ]
-        return huggingllm._tokenizer.apply_chat_template(messages_dict, tokenize=False, add_generation_prompt=True)
+        prompt =  huggingllm._tokenizer.apply_chat_template(messages_dict, tokenize=False, add_generation_prompt=True)
+        logging.debug(prompt)
+        return prompt
 
 
     device, dtype = get_device_and_dtype()
@@ -62,6 +65,7 @@ def get_phi2_llm(context_window = 2048, max_new_tokens = 256):
             role = role_maps[role] if role in role_maps else role
             prompt += f"\n{role}:: {message.content}\n\n"
         prompt += "Response ::"
+        logging.debug(prompt)
         return prompt
     device, dtype = get_device_and_dtype()
 
