@@ -12,24 +12,48 @@ import dotenv
 import logging
 import sys
 import os.path
-from projectgurukul.readers import CSVReader
+from typing import Callable, Tuple, Any
+from projectgurukul.readers import CSVReader, RamayanaCSVReader
 dotenv.load_dotenv('.env')
+from dataclasses import dataclass
 
+@dataclass
+class ScriptureInfo:
+    name: str
+    directory: str
+    load_method: Callable[[str], Tuple[str]]
+    metadatas_to_display: Tuple[str]
 
 def load_gita(directory):
     def preprocess(row):
         row['chapter'], row['verse'] = row.verse_number.split(', ')
         return row
 
-    gita_reader = CSVReader(text_columns=['verse_in_sanskrit', 'translation_in_english',
-                            'meaning_in_english'], metadata_columns=['chapter', 'verse'], preprocess=preprocess)
+    reader = CSVReader(text_columns=['verse_in_sanskrit', 'translation_in_english',
+                                     'meaning_in_english'], metadata_columns=['chapter', 'verse'], preprocess=preprocess)
     documents = SimpleDirectoryReader(
-        input_dir=directory, file_extractor={".csv": gita_reader}).load_data()
+        input_dir=directory, file_extractor={".csv": reader}).load_data()
+    return documents
+
+
+def load_ramayana(directory):
+    reader = RamayanaCSVReader()
+    documents = SimpleDirectoryReader(
+        input_dir=directory, file_extractor={".csv": reader}).load_data()
+    for document in documents:
+        document.metadata["kanda"] = document.metadata["file_name"].split('.')[
+            0].replace("kanda", " kanda")
     return documents
 
 
 def load_scripture_basics(directory):
     return SimpleDirectoryReader(input_dir=directory).load_data()
+
+
+SCRIPTURE_MAPPING = {
+    "ramayana": ScriptureInfo(name="Valmiki Ramayana", directory="ramayana", load_method=load_ramayana, metadatas_to_display = ('kanda','saraga')),
+    "gita": ScriptureInfo(name="Bhagavad Gita", directory="gita", load_method=load_gita, metadatas_to_display=('chapter','verse')),
+}
 
 
 def setup_service_context(args):
@@ -41,7 +65,7 @@ def setup_service_context(args):
 
         instructor_embeddings = embedders.InstructorEmbeddings(
             embed_batch_size=1)
-        llm = llms.get_phi2_llm() # llms.get_tinyllama_llm()
+        llm = llms.get_phi2_llm()  # llms.get_tinyllama_llm()
         service_context = ServiceContext.from_defaults(
             chunk_size=512, llm=llm, context_window=2048, embed_model=instructor_embeddings)
         set_global_service_context(service_context)
@@ -62,12 +86,15 @@ def main():
                         help='the question to process')
     parser.add_argument('--offline', action='store_true',
                         help='use local models')
-    
+
     parser.add_argument('--debug', action='store_true',
                         help='print debug logs')
 
-    args = parser.parse_args()
+    parser.add_argument('--scripture', type=str, default='ramayana',
+                        help='The scripture to fetch answers from (default: ramayana)',
+                        choices=SCRIPTURE_MAPPING.keys())
 
+    args = parser.parse_args()
 
     if args.debug:
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -75,11 +102,13 @@ def main():
 
     storage_dir, similarity_top_k = setup_service_context(args)
 
-    BOOK_DIR = "./data/gita/"
+    scripture_info = SCRIPTURE_MAPPING[args.scripture]
+    # print(scripture_info)
+    BOOK_DIR = f"./data/{scripture_info.directory}/"
     persist_dir = BOOK_DIR + storage_dir
 
     if not os.path.exists(persist_dir):
-        documents = load_gita(BOOK_DIR + "data")
+        documents = scripture_info.load_method(BOOK_DIR + "data")
         print("Creating one-time document index ...")
         index = VectorStoreIndex.from_documents(documents)
         print("Finished creating document index.")
@@ -103,10 +132,11 @@ def main():
         query + " Also, Mention the source, Sanskrit shlokas, and logic behind the answer. Properly format your answer using markdowns")
     print("A:", response)
 
-    print("\n\nSources:")
+    print(f"\n\nSources: {scripture_info.name}")
     for i, source in enumerate(response.source_nodes):
-        print(f"\nSource [{i+1}]: ")
-        print(source.node.metadata)
+        print(f"\n\n[{i+1}]:" ,{k:v for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display})
+        print(source.node.get_content()[:500], '...')
+
 
 if __name__ == "__main__":
     main()

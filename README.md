@@ -45,6 +45,9 @@ https://www.holy-bhagavad-gita.org/chapter/1/verse/1
 
 https://www.kaggle.com/datasets/yashnarnaware/bhagavad-gita-versewise
 
+Ramayana:
+https://www.kaggle.com/datasets/subodh29/valmiki-ramayan-sanskrit
+
 
 # Test
 
@@ -55,7 +58,7 @@ python -m pytest
 # Run
 
 ```
-python starter.py --question "<Your question>" [--offline] [--debug]
+python starter.py --question "<Your question>" [--offline] [--debug] [--scripture]
 ```
 
 ## Online OpenAI models

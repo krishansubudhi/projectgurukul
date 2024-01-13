@@ -1,4 +1,4 @@
-id  Question
+id  Question    Scripture
 1   "Why was Arjuna confused?"
 2   "Who can attain god?"
 3   "Who is God?"
@@ -10,3 +10,6 @@ id  Question
 9   "If people reincarnate, then how and when do they end up in swarga or narka?""
 10  "If god can't be seen, how can we trust him?"
 11  "What is the meaning of life?"
+12  "Did Ram and Seeta eat meat?"   Ramayana
+13  "Was Ravana a genious or a fool?"   Ramayana
+14  "Did Ravana misbehave with seeta sexually while abductive?"   Ramayana
