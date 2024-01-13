@@ -41,7 +41,7 @@ def setup_service_context(args):
 
         instructor_embeddings = embedders.InstructorEmbeddings(
             embed_batch_size=1)
-        llm = llms.get_tinyllama_llm()# llms.get_phi2_llm()#
+        llm = llms.get_phi2_llm() # llms.get_tinyllama_llm()
         service_context = ServiceContext.from_defaults(
             chunk_size=512, llm=llm, context_window=2048, embed_model=instructor_embeddings)
         set_global_service_context(service_context)
