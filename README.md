@@ -58,12 +58,12 @@ python -m pytest
 # Run
 
 ```
-python starter.py --question "<Your question>" [--offline] [--debug] [--scripture]
+python app/starter.py --question "<Your question>" [--offline] [--debug] [--scripture]
 ```
 
 ## Online OpenAI models
 ```
-python starter.py --question "If god can't be seen, how can we trust him?"
+python app/starter.py --question "If god can't be seen, how can we trust him?"
 ```
 **Q: If god can't be seen, how can we trust him?**
 
@@ -114,13 +114,13 @@ Use the `--debug` flag. This logs the actual prompt and context passed to the ll
 
 Example:
 ```
-python starter.py --question "Who was arjuna?" --offline --debug
+python app/starter.py --question "Who was arjuna?" --offline --debug
 ```
 
 # Website
 
 ## Run locally
 ```
-Start streamlit run website/app.py
+python -m streamlit run website/app.py
 ```
 
