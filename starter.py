@@ -18,6 +18,8 @@ dotenv.load_dotenv('.env')
 from llama_index.llms import OpenAI
 from dataclasses import dataclass
 
+SYSTEM_PROMPT = " Also, Mention the source, Sanskrit shlokas, and logic behind the answer. Properly format your answer using markdowns"
+
 @dataclass
 class ScriptureInfo:
     name: str
@@ -57,8 +59,8 @@ SCRIPTURE_MAPPING = {
 }
 
 
-def setup_service_context(args):
-    if args.offline:
+def setup_service_context(is_offline):
+    if is_offline:
         print("Using offline local models.")
 
         # Avoids unnecessary logs in online mode
@@ -82,6 +84,24 @@ def setup_service_context(args):
 
     return storage_dir, similarity_top_k
 
+def get_query_engines(scripture, similarity_top_k, is_offline):
+    storage_dir, similarity_top_k = setup_service_context(is_offline)
+    scripture_info = SCRIPTURE_MAPPING[scripture]
+    BOOK_DIR = f"./data/{scripture_info.directory}/"
+    persist_dir = BOOK_DIR + storage_dir
+
+    if not os.path.exists(persist_dir):
+        documents = scripture_info.load_method(BOOK_DIR + "data")
+        print("Creating one-time document index ...")
+        index = VectorStoreIndex.from_documents(documents)
+        print("Finished creating document index.")
+        index.storage_context.persist(persist_dir=persist_dir)
+    else:
+        logging.info(f"loading from stored index {persist_dir}")
+        storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
+        index = load_index_from_storage(storage_context)
+    return index.as_query_engine(similarity_top_k=similarity_top_k)
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -104,26 +124,9 @@ def main():
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
         logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
-    storage_dir, similarity_top_k = setup_service_context(args)
-
     scripture_info = SCRIPTURE_MAPPING[args.scripture]
-    # print(scripture_info)
-    BOOK_DIR = f"./data/{scripture_info.directory}/"
-    persist_dir = BOOK_DIR + storage_dir
-
-    if not os.path.exists(persist_dir):
-        documents = scripture_info.load_method(BOOK_DIR + "data")
-        print("Creating one-time document index ...")
-        index = VectorStoreIndex.from_documents(documents)
-        print("Finished creating document index.")
-        index.storage_context.persist(persist_dir=persist_dir)
-    else:
-        logging.info(f"loading from stored index {persist_dir}")
-        storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
-        index = load_index_from_storage(storage_context)
-
-    query_engine = index.as_query_engine(similarity_top_k=similarity_top_k)
-
+    query_engine = get_query_engines(args.scripture,similarity_top_k=3,is_offline=args.offline)
+    
     if len(sys.argv) < 3:
         print(
             "Usage: python main.py [--offline] 'Why Arjuna was confused?'")
@@ -133,7 +136,7 @@ def main():
     print("Q:", query)
 
     response = query_engine.query(
-        query + " Also, Mention the source and logic behind the answer. Properly format your answer using markdowns")
+        query + SYSTEM_PROMPT)
     print("A:", response)
 
     print(f"\n\nSources: {scripture_info.name}")
