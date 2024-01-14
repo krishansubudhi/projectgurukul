@@ -15,6 +15,7 @@ import os.path
 from typing import Callable, Tuple, Any
 from projectgurukul.readers import CSVReader, RamayanaCSVReader
 dotenv.load_dotenv('.env')
+from llama_index.llms import OpenAI
 from dataclasses import dataclass
 
 SYSTEM_PROMPT = " Also, Mention the source, Sanskrit shlokas, and logic behind the answer. Properly format your answer using markdowns"
@@ -75,8 +76,11 @@ def setup_service_context(is_offline):
         similarity_top_k = 1
     else:
         print("Using openAI models")
+        llm = OpenAI(model="gpt-4-1106-preview")#gpt-4-1106-preview
+        service_context = ServiceContext.from_defaults(llm=llm)
+        set_global_service_context(service_context)
         storage_dir = '.storage'
-        similarity_top_k = 3
+        similarity_top_k = 2
 
     return storage_dir, similarity_top_k
 
@@ -138,7 +142,7 @@ def main():
     print(f"\n\nSources: {scripture_info.name}")
     for i, source in enumerate(response.source_nodes):
         print(f"\n\n[{i+1}]:" ,{k:v for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display})
-        print(source.node.get_content()[:500], '...')
+        print(source.node.get_content()[:1000], '...')
 
 
 if __name__ == "__main__":
