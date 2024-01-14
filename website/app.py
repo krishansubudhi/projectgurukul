@@ -1,5 +1,6 @@
 import streamlit as st
 import starter
+import os
 
 
 @st.cache_resource
@@ -9,7 +10,9 @@ def load_data():
 
 st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered", initial_sidebar_state="collapsed")
 
-
+def set_open_api_key():
+    openai_api_key = st.session_state['chatbot_api_key']
+    os.environ['OPENAI_API_KEY'] = openai_api_key
 
 with st.sidebar:
     def update_source_query_engine():
@@ -21,6 +24,7 @@ with st.sidebar:
     default="Gita", 
     on_change=update_source_query_engine,
     options = ['Gita', 'Ramayana', 'Mahabharata', 'Rig Veda'])
+    openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password", on_change=set_open_api_key)
 
 query_engine = load_data()
 
@@ -34,7 +38,7 @@ for msg in st.session_state.messages:
 
 if prompt := st.chat_input():
     if not query_engine:
-        st.info("Please select a source from the sidebar.")
+        st.info("Please select a source from the sidebar and provide you open ai API key")
         st.stop()
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
