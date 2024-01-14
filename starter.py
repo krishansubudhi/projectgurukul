@@ -17,6 +17,8 @@ from projectgurukul.readers import CSVReader, RamayanaCSVReader
 dotenv.load_dotenv('.env')
 from dataclasses import dataclass
 
+SYSTEM_PROMPT = " Also, Mention the source, Sanskrit shlokas, and logic behind the answer. Properly format your answer using markdowns"
+
 @dataclass
 class ScriptureInfo:
     name: str
@@ -130,7 +132,7 @@ def main():
     print("Q:", query)
 
     response = query_engine.query(
-        query + " Also, Mention the source, Sanskrit shlokas, and logic behind the answer. Properly format your answer using markdowns")
+        query + SYSTEM_PROMPT)
     print("A:", response)
 
     print(f"\n\nSources: {scripture_info.name}")

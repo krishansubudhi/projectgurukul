@@ -39,7 +39,7 @@ if prompt := st.chat_input():
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
     # fetch response\
-    response = query_engine.query(prompt)
+    response = query_engine.query(prompt + starter.SYSTEM_PROMPT)
     msg = response.response
     st.session_state.messages.append({"role": "assistant", "content": msg})
     st.chat_message("assistant").write(msg)
