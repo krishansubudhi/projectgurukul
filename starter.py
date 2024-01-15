@@ -43,7 +43,7 @@ def main():
     print("Q:", query)
 
     response = query_engine.query(
-        query + SYSTEM_PROMPT)
+        query)
     print("A:", response)
     print(f"\n\nSources: {scripture_info.name}")
     for i, source in enumerate(response.source_nodes):
