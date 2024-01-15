@@ -78,9 +78,7 @@ if prompt := st.chat_input():
         for i, source in enumerate(response.source_nodes):
             relevant_metadata = ", ".join([f"{k} : {v}" for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display])
             sourcestr += f"\n\n[{i+1}]: {relevant_metadata}\n\n" #+ f"{source.node.get_content()[:200]} '...'"
-        
         msg = msg + sourcestr 
-
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.write(msg)
 

@@ -2,16 +2,19 @@ import streamlit as st
 import pymongo
 from dataclasses import dataclass, asdict
 from uuid import uuid4
+from datetime import datetime
 
 @dataclass
 class Comment:
     _id: uuid4
     userid: str
     comment: str
+    post_date: datetime
 
 @dataclass
 class ForumThread:
     _id: uuid4
+    post_date: datetime
     question: str 
     answer: str
     comments: list[Comment]
@@ -28,7 +31,7 @@ def init_connection():
 client = init_connection()
 
 def post_thread(question:str, answer:str):
-    add_thread_to_forum(ForumThread(_id = uuid4(), question=question, answer=answer, comments=[]))
+    add_thread_to_forum(ForumThread(_id = uuid4(), question=question, answer=answer, comments=[], post_date=datetime.now()))
 
 def add_thread_to_forum(thread: ForumThread):
     threads_collection = client.test.threads
@@ -53,11 +56,17 @@ def read_forum_data():
 if 'forum_render' in st.session_state:
     st.title("📝 Gurukul Forum")
     threads = read_forum_data()
-    with st.container():
+    with st.container(border=True):
+        st.markdown("# All Threads")
         for thread in threads:
-            with st.container():
-                st.text(thread.question['content'])
-                st.text(thread.answer['content'])
-                with st.container():
+            with st.container(border=True):
+                st.markdown("*{}*".format(thread.post_date.date()))
+                st.markdown("## Q: {}".format(thread.question['content']))
+                st.markdown("### A: {} ".format(thread.answer['content']))
+                with st.expander("💬 Open comments"):
+                    # Show comments
+                    st.write("**Comments:**")
                     for comment in thread.comments:
-                        st.text(comment.comment)
+                        st.markdown("{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
+                    if len(thread.comments) > 0:
+                        st.success("☝️ Your comment was successfully posted.")
