@@ -13,8 +13,9 @@ show_pages(
         Page("website/pages/forum.py", "Forum", ":books:"),
     ]
 )
+from projectgurukul import corelib
+from projectgurukul.corelib import (SYSTEM_PROMPT, get_query_engines, get_empty_response) 
 from pages.forum import post_thread, set_rendering_on
-from projectgurukul.corelib import get_query_engines
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
 DEBUG = False
@@ -68,7 +69,7 @@ if prompt := st.chat_input():
             if DEBUG:
                 response = get_empty_response()
             else:
-                response = query_engine.query(prompt)
+                response = query_engine.query(prompt + SYSTEM_PROMPT)
         msg = response.response
         
         scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]

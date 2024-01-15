@@ -36,14 +36,12 @@ def post_thread(question:str, answer:str):
 def add_thread_to_forum(thread: ForumThread):
     threads_collection = client.test.threads
     threads_collection.insert_one(asdict(thread))
-    read_forum_data.clear()
     render_forum()
     
 def add_comment_to_forum(thread: ForumThread, comment: Comment):
     threads_collection = client.test.threads
     thread.comments.append(comment)
     threads_collection.find_one_and_update(thread)
-    read_forum_data.clear()
     render_forum()
 
 # Pull data from the collection.
