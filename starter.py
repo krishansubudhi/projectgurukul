@@ -1,13 +1,14 @@
 import argparse
-import dotenv
 import logging
 import sys
+sys.path.append(".")
+import dotenv
+dotenv.load_dotenv(".env")
 from projectgurukul.corelib import (
     SCRIPTURE_MAPPING,
     SYSTEM_PROMPT,
     get_query_engines)
 
-dotenv.load_dotenv('.env')
 
 def main():
     parser = argparse.ArgumentParser(
@@ -31,7 +32,7 @@ def main():
         logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
     scripture_info = SCRIPTURE_MAPPING[args.scripture]
-    query_engine = get_query_engines(args.scripture,similarity_top_k=3,is_offline=args.offline)
+    query_engine = get_query_engines(args.scripture,similarity_top_k=2,is_offline=args.offline)
     
     if len(sys.argv) < 3:
         print(
