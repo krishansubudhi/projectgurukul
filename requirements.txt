@@ -7,3 +7,5 @@ InstructorEmbedding
 sentence_transformers
 argparse
 streamlit
+pymongo
+st-pages

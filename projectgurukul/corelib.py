@@ -6,6 +6,7 @@ from llama_index import (
     load_index_from_storage,
     ServiceContext,
     set_global_service_context,
+    Response
 )
 import dotenv
 import logging
@@ -108,3 +109,6 @@ def get_query_engines(scripture, is_offline):
     prompts_dict = query_engine.get_prompts()
     print("prompts_dict", prompts_dict)
     return query_engine
+
+def get_empty_response():
+    return Response("This is test response", [], {})
