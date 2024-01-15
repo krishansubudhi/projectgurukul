@@ -33,11 +33,13 @@ def post_thread(question:str, answer:str):
 def add_thread_to_forum(thread: ForumThread):
     threads_collection = client.test.threads
     threads_collection.insert_one(asdict(thread))
+    read_forum_data.clear()
     
 def add_comment_to_forum(thread: ForumThread, comment: Comment):
     threads_collection = client.test.threads
     thread.comments.append(comment)
     threads_collection.find_one_and_update(thread)
+    read_forum_data.clear()
 
 # Pull data from the collection.
 # Uses st.cache_data to only rerun when the query changes or after 1 min.
@@ -51,8 +53,11 @@ def read_forum_data():
 if 'forum_render' in st.session_state:
     st.title("📝 Gurukul Forum")
     threads = read_forum_data()
-    for thread in threads:
-        st.text(thread.question['content'])
-        st.text(thread.answer['content'])
-        for comment in thread.comments:
-            st.text(comment.comment)
+    with st.container():
+        for thread in threads:
+            with st.container():
+                st.text(thread.question['content'])
+                st.text(thread.answer['content'])
+                with st.container():
+                    for comment in thread.comments:
+                        st.text(comment.comment)
