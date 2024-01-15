@@ -78,7 +78,7 @@ def setup_service_context(is_offline):
         service_context = ServiceContext.from_defaults(llm=llm)
         set_global_service_context(service_context)
         storage_dir = '.storage'
-        similarity_top_k = 2
+        similarity_top_k = 3
 
     return storage_dir, similarity_top_k
 
