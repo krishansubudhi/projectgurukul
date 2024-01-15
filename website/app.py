@@ -4,7 +4,7 @@ import dotenv
 dotenv.load_dotenv(".env")
 import streamlit as st
 from projectgurukul import corelib
-from projectgurukul.corelib import (SYSTEM_PROMPT, get_query_engines) 
+from projectgurukul.corelib import get_query_engines
 import openai
 
 
@@ -56,7 +56,7 @@ if prompt := st.chat_input():
         with st.spinner("Breathe in, breathe out, you're getting there 🧘‍♂️"):
             # TODO: User chat engine. Query engine does not take context.
             # https://docs.llamaindex.ai/en/stable/api_reference/query/chat_engines.html
-            response = query_engine.query(prompt + SYSTEM_PROMPT)
+            response = query_engine.query(prompt)
         msg = response.response
         
         scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]

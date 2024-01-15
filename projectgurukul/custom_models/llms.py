@@ -13,10 +13,8 @@ def get_device_and_dtype():
         dtype = "auto"
     return device, dtype
 
-SYSTEM_PROMPT = "You are an expert Q&A system that is trusted around the world.\nAlways answer the query using the provided context information, and not prior knowledge.\nSome rules to follow:\n1. Never directly reference the given context in your answer.\n2. Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines."
 
-
-def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256):
+def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256, system_prompt = None):
     def messages_to_prompt(messages: ChatMessage):
         messages_dict = [
                     {"role": message.role.value, "content": message.content}
@@ -28,11 +26,10 @@ def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256):
 
 
     device, dtype = get_device_and_dtype()
-    system_prompt = f"<|system|>"
 
     # This will wrap the default prompts that are internal to llama-index
     query_wrapper_prompt = PromptTemplate(
-        system_prompt+"<|user|>{query_str}<|assistant|>")
+        f"<|system|>{system_prompt}"+"<|user|>{query_str}<|assistant|>")
 
     huggingllm = HuggingFaceLLM(
         context_window=context_window,
@@ -44,7 +41,8 @@ def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256):
         generate_kwargs={'do_sample': False},
         model_kwargs={"torch_dtype": dtype},
         query_wrapper_prompt=query_wrapper_prompt,
-        device_map = device
+        device_map = device,
+        system_prompt=system_prompt
     )
 
     huggingllm.messages_to_prompt = messages_to_prompt
@@ -52,7 +50,7 @@ def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256):
 
 
 
-def get_phi2_llm(context_window = 2048, max_new_tokens = 256):
+def get_phi2_llm(context_window = 2048, max_new_tokens = 256, system_prompt = None):
 
     role_maps = {
         "system" :"Instructions",
@@ -83,6 +81,7 @@ def get_phi2_llm(context_window = 2048, max_new_tokens = 256):
         model_kwargs={"torch_dtype": dtype, "trust_remote_code" :True},
         query_wrapper_prompt=query_wrapper_prompt,
         messages_to_prompt = messages_to_prompt,
-        device_map = device
+        device_map = device,
+        system_prompt=system_prompt
     )
     return huggingllm

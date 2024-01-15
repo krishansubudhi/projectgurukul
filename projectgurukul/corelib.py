@@ -16,7 +16,13 @@ dotenv.load_dotenv('.env')
 from llama_index.llms import OpenAI
 from dataclasses import dataclass
 
-SYSTEM_PROMPT = " Also, Mention the source, Sanskrit shlokas, and logic behind the answer. Properly format your answer using markdowns"
+SYSTEM_PROMPT = """You are answering texts on Hindu scriptures. Always make sure to follow these primary rules:
+1. Be careful while answering and avoid hurting sentiments of people following hindu dharma. 
+2. Always mention the source, Sanskrit shlokas, and logic behind the answer. 
+3. Properly format your answer using markdowns.
+"""
+
+
 
 @dataclass
 class ScriptureInfo:
@@ -66,7 +72,7 @@ def setup_service_context(is_offline):
 
         instructor_embeddings = embedders.InstructorEmbeddings(
             embed_batch_size=1)
-        llm = llms.get_phi2_llm()  # llms.get_tinyllama_llm()
+        llm = llms.get_phi2_llm(system_prompt= SYSTEM_PROMPT)  # llms.get_tinyllama_llm(system_prompt= SYSTEM_PROMPT)
         service_context = ServiceContext.from_defaults(
             chunk_size=512, llm=llm, context_window=2048, embed_model=instructor_embeddings)
         set_global_service_context(service_context)
@@ -74,7 +80,7 @@ def setup_service_context(is_offline):
         similarity_top_k = 1
     else:
         print("Using openAI models")
-        llm = OpenAI(model="gpt-4-1106-preview")#gpt-4-1106-preview
+        llm = OpenAI(model="gpt-3.5-turbo", system_prompt=SYSTEM_PROMPT)#gpt-4-1106-preview
         service_context = ServiceContext.from_defaults(llm=llm)
         set_global_service_context(service_context)
         storage_dir = '.storage'
@@ -98,4 +104,7 @@ def get_query_engines(scripture, is_offline):
         logging.info(f"loading from stored index {persist_dir}")
         storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
         index = load_index_from_storage(storage_context)
-    return index.as_query_engine(similarity_top_k=similarity_top_k)
+    query_engine = index.as_query_engine(similarity_top_k=similarity_top_k)
+    prompts_dict = query_engine.get_prompts()
+    print("prompts_dict", prompts_dict)
+    return query_engine
