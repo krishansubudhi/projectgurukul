@@ -17,7 +17,6 @@ class ForumThread:
     comments: list[Comment]
 
 def set_rendering_on():
-    print("SETTING RENDERING ON")
     if 'forum_render' not in st.session_state:
         st.session_state['forum_render'] = True 
 
@@ -52,8 +51,6 @@ def read_forum_data():
 if 'forum_render' in st.session_state:
     st.title("📝 Gurukul Forum")
     threads = read_forum_data()
-    print("THREADS FETCHED")
-    print(threads)
     for thread in threads:
         st.text(thread.question['content'])
         st.text(thread.answer['content'])
