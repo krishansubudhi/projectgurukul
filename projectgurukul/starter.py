@@ -76,11 +76,11 @@ def setup_service_context(is_offline):
     else:
         print("Using openAI models")
         storage_dir = '.storage'
-        similarity_top_k = 3
+        similarity_top_k = 2
 
     return storage_dir, similarity_top_k
 
-def get_query_engines(scripture, similarity_top_k, is_offline):
+def get_query_engines(scripture, is_offline):
     storage_dir, similarity_top_k = setup_service_context(is_offline)
     scripture_info = SCRIPTURE_MAPPING[scripture]
     BOOK_DIR = f"./data/{scripture_info.directory}/"

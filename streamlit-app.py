@@ -1,12 +1,18 @@
-import streamlit as st
-import starter
+import dotenv
+dotenv.load_dotenv(".env")
 import os
-
+import streamlit as st
+from projectgurukul import starter
 
 @st.cache_resource
 def load_data():
     scripture = str.lower(st.session_state['source'][0])
-    return starter.get_query_engines(scripture=scripture, is_offline=False, similarity_top_k=3)
+    is_offline = True
+    if 'OPENAI_API_KEY' in os.environ:
+        is_offline = False
+    return starter.get_query_engines(scripture=scripture, is_offline=is_offline)
+
+
 
 st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered", initial_sidebar_state="collapsed")
 
@@ -21,15 +27,16 @@ with st.sidebar:
     options = st.multiselect(
     label='Select Source of Vedic Scripture',
     key='source',
-    default="Gita", 
+    default="Ramayana", 
     on_change=update_source_query_engine,
-    options = ['Gita', 'Ramayana', 'Mahabharata', 'Rig Veda'])
+    options = ['Gita', 'Ramayana'])
     openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password", on_change=set_open_api_key)
 
 query_engine = load_data()
 
 st.title("🕉️ Project Gurukul")
 st.caption("🚀 Select a source from the side bar and ask me anything from the selected scripture.")
+st.caption(f"📖 Currently fetching answers from {','.join(st.session_state['source'])}")
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "Ask me anything about life ?"}]
 
@@ -42,8 +49,17 @@ if prompt := st.chat_input():
         st.stop()
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-    # fetch response\
-    response = query_engine.query(prompt + starter.SYSTEM_PROMPT)
-    msg = response.response
-    st.session_state.messages.append({"role": "assistant", "content": msg})
-    st.chat_message("assistant").write(msg)
+    # fetch response
+    with st.chat_message("assistant"):
+        with st.spinner("Breathe in, breathe out, you're getting there 🧘‍♂️"):
+            # TODO: User chat engine. Query engine does not take context.
+            # https://docs.llamaindex.ai/en/stable/api_reference/query/chat_engines.html
+            response = query_engine.query(prompt + starter.SYSTEM_PROMPT)
+        msg = response.response
+        st.session_state.messages.append({"role": "assistant", "content": msg})
+        st.write(msg)
+
+clear_button_clicked = st.button("Clear")
+if clear_button_clicked:
+    st.session_state.messages = []
+    st.rerun()

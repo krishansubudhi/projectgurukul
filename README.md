@@ -121,6 +121,6 @@ python starter.py --question "Who was arjuna?" --offline --debug
 
 ## Run locally
 ```
-Start streamlit run website/app.py
+streamlit run website/app.py
 ```
 
