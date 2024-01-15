@@ -6,7 +6,7 @@ dotenv.load_dotenv(".env")
 
 import os
 import streamlit as st
-from projectgurukul import starter
+import starter
 
 @st.cache_resource
 def load_data():
@@ -14,6 +14,7 @@ def load_data():
     is_offline = True
     if 'OPENAI_API_KEY' in os.environ:
         is_offline = False
+    print("is_offline mode", is_offline)
     return starter.get_query_engines(scripture=scripture, is_offline=is_offline)
 
 
