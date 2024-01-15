@@ -6,6 +6,7 @@ from llama_index import (
     load_index_from_storage,
     ServiceContext,
     set_global_service_context,
+    Response
 )
 import dotenv
 import logging
@@ -99,3 +100,7 @@ def get_query_engines(scripture, is_offline):
         storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
         index = load_index_from_storage(storage_context)
     return index.as_query_engine(similarity_top_k=similarity_top_k)
+
+# help in shorter debugging cycle
+def get_empty_response():
+    return Response("This is a test response", [], {})
