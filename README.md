@@ -124,3 +124,31 @@ python starter.py --question "Who was arjuna?" --offline --debug
 python -m streamlit run website/app.py
 ```
 
+
+Ravana had at least one brother, whose name is Vibhishana. This information is derived from the following Sanskrit shloka:
+
+रावणस्यानुजोभ्राताविभीषणइतिश्रुतः ।
+चतुर्भिस्सहरक्षोभिर्भवन्तंशरणंगतः ।।6.17.19।।
+
+The verse translates to "Ravana's younger brother, known as Vibhishana, along with four Rakshasas has come to you seeking protection."
+
+The logic behind the answer is that the verse explicitly mentions Vibhishana as Ravana's brother. However, the verse does not provide information about any other brothers, so based on this verse alone, we can confirm only one brother, Vibhishana.
+
+Sources:
+---
+[1]: sarga : 20, kanda : bala kanda
+
+Rama was born to me after a great deal of suffering. It is not proper to take him with you.
+
+चतुर्णामात्मजानां हि प्रीति:परमिका मम।।1.20.11।।ज्येष्ठं धर्मप्रधानं च न रामं नेतुमर्हसि। My love for Rama among all my four sons is supreme.It is not proper for you to take Rama, the eldest son whose prime qualification is his virtue.
+
+किंवीर्या राक्षसास्ते च कस्य पुत्राश्च ते च के।।1.20.12।।कथं प्रमाणा: के चैतान्रक्षन्ति मुनिपुङ्गव। O best of sages, how powerful are those rakshsas? Whose sons are '...'
+
+[2]: sarga : 17, kanda : yuddha kanda
+
+रावणस्यानुजोभ्राताविभीषणइतिश्रुतः ।चतुर्भिस्सहरक्षोभिर्भवन्तंशरणंगतः ।।6.17.19।। "Ravana's younger brother, known as Vibheeshana, along with four Rakshasas has come to you seeking protection."
+
+मन्त्रेव्यूहेनयेचारेयुक्तोभवितुमर्हसि ।वानराणांचभद्रंतेपरेषांचपरन्तप ।।6.17.20।। "O Scorcher of enemies For Vanara's safety and considering to be spies also you should be alert in your deliberations, with a plan and policy in moving together and deciding what is to be done. Let you be safe."
+
+अन्तर्धानग '...'
+</sub>

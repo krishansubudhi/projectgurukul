@@ -32,7 +32,7 @@ def main():
         logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
     scripture_info = SCRIPTURE_MAPPING[args.scripture]
-    query_engine = get_query_engines(args.scripture,similarity_top_k=2,is_offline=args.offline)
+    query_engine = get_query_engines(args.scripture, is_offline=args.offline)
     
     if len(sys.argv) < 3:
         print(

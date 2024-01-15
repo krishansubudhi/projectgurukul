@@ -52,7 +52,7 @@ def load_scripture_basics(directory):
 
 
 SCRIPTURE_MAPPING = {
-    "ramayana": ScriptureInfo(name="Valmiki Ramayana", directory="ramayana", load_method=load_ramayana, metadatas_to_display = ('kanda','saraga')),
+    "ramayana": ScriptureInfo(name="Valmiki Ramayana", directory="ramayana", load_method=load_ramayana, metadatas_to_display = ('kanda','sarga')),
     "gita": ScriptureInfo(name="Bhagavad Gita", directory="gita", load_method=load_gita, metadatas_to_display=('chapter','verse')),
 }
 
@@ -82,7 +82,7 @@ def setup_service_context(is_offline):
 
     return storage_dir, similarity_top_k
 
-def get_query_engines(scripture, similarity_top_k, is_offline):
+def get_query_engines(scripture, is_offline):
     storage_dir, similarity_top_k = setup_service_context(is_offline)
     scripture_info = SCRIPTURE_MAPPING[scripture]
     BOOK_DIR = f"./data/{scripture_info.directory}/"
