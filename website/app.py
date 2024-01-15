@@ -84,12 +84,14 @@ if prompt := st.chat_input():
 
 #post to forum button
 if 'messages' in st.session_state and len(st.session_state.messages)>1:
-    post_to_forum = st.button("Post To Forum")
+    def disable(b):
+        st.session_state["disabled_post_button"] = b
+    post_to_forum = st.button("Post To Forum", on_click=disable, disabled=st.session_state.get("disabled_post_button", False), args=(True,))
     if post_to_forum:
         question = st.session_state.messages[-2]
         answer = st.session_state.messages[-1]
         post_thread(question, answer)
-        st.stop()
+        st.toast(":green[**Posted your question and answer to forum.**]")
 
 #clear button to clear context 
 if 'messages' in st.session_state and len(st.session_state.messages)>1:

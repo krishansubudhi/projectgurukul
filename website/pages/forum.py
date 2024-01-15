@@ -37,36 +37,41 @@ def add_thread_to_forum(thread: ForumThread):
     threads_collection = client.test.threads
     threads_collection.insert_one(asdict(thread))
     read_forum_data.clear()
+    render_forum()
     
 def add_comment_to_forum(thread: ForumThread, comment: Comment):
     threads_collection = client.test.threads
     thread.comments.append(comment)
     threads_collection.find_one_and_update(thread)
     read_forum_data.clear()
+    render_forum()
 
 # Pull data from the collection.
 # Uses st.cache_data to only rerun when the query changes or after 1 min.
-@st.cache_data(ttl=60)
+# @st.cache_data(ttl=60)
 def read_forum_data():
     items = client.test.threads.find()
     items = list(items)  # make hashable for st.cache_data
     threads = [ForumThread(**item) for item in items]
     return threads
+    
+def render_forum():
+    threads = read_forum_data()
+    with st.container(border=True):
+            st.markdown("# All Threads")
+            for thread in threads:
+                with st.container(border=True):
+                    st.markdown("*{}*".format(thread.post_date.date()))
+                    st.markdown("## Q: {}".format(thread.question['content']))
+                    st.markdown("### A: {} ".format(thread.answer['content']))
+                    with st.expander("💬 Open comments"):
+                        # Show comments
+                        st.write("**Comments:**")
+                        for comment in thread.comments:
+                            st.markdown("{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
+                        if len(thread.comments) > 0:
+                            st.success("☝️ Your comment was successfully posted.")
 
 if 'forum_render' in st.session_state:
     st.title("📝 Gurukul Forum")
-    threads = read_forum_data()
-    with st.container(border=True):
-        st.markdown("# All Threads")
-        for thread in threads:
-            with st.container(border=True):
-                st.markdown("*{}*".format(thread.post_date.date()))
-                st.markdown("## Q: {}".format(thread.question['content']))
-                st.markdown("### A: {} ".format(thread.answer['content']))
-                with st.expander("💬 Open comments"):
-                    # Show comments
-                    st.write("**Comments:**")
-                    for comment in thread.comments:
-                        st.markdown("{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
-                    if len(thread.comments) > 0:
-                        st.success("☝️ Your comment was successfully posted.")
+    render_forum()
