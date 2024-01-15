@@ -1,5 +1,9 @@
+import sys
+sys.path.append(".")
+
 import dotenv
 dotenv.load_dotenv(".env")
+
 import os
 import streamlit as st
 from projectgurukul import starter
@@ -59,7 +63,8 @@ if prompt := st.chat_input():
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.write(msg)
 
-clear_button_clicked = st.button("Clear")
-if clear_button_clicked:
-    st.session_state.messages = []
-    st.rerun()
+if 'messages' in st.session_state and len(st.session_state.messages)>1:
+    clear_button_clicked = st.button("Clear")
+    if clear_button_clicked:
+        del st.session_state.messages
+        st.rerun()
