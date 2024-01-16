@@ -36,7 +36,11 @@ class Gita(Scripture):
     NAME = "Bhagavad Gita"
     DIRECTORY = "gita"
     METADATAS_TO_DISPLAY = ('chapter', 'verse', 'source')
-    DESCRIPTION = "Holy scripture - Bhagavad Gita"
+    DESCRIPTION = ("Datasource for Bhagavad Gita - a sacred Hindu scripture that is part"
+        " of the Indian epic Mahabharata. It consists of a conversation between"
+        " Prince Arjuna and the god Krishna, who serves as his charioteer."
+        " Explore insights, chapters, verses, and the profound teachings of the Gita."
+        )
 
     def load(self, directory):
         def preprocess(row):
@@ -75,7 +79,14 @@ class Ramayana(Scripture):
     NAME = "Valmiki Ramayana"
     DIRECTORY = "ramayana"
     METADATAS_TO_DISPLAY = ('kanda', 'sarga', 'source')
-    DESCRIPTION = "Epic poem - Valmiki Ramayana"
+    DESCRIPTION = (
+        "Datasource for Ramayana - one of the two major Sanskrit epics of ancient"
+        " Indian literature. Ramayana narrates the life of Prince Rama, his wife Sita,"
+        " and his loyal companion Hanuman. Explore the epic journey, learn about the"
+        " different kandas, sargas, and delve into the rich narrative that includes"
+        " the powerful and complex character of Ravana, the demon king of Lanka."
+        " Discover the intricate details of Ravana's role and impact in the Ramayana story."
+    )
     KANDA_MAPPINGS={
         "bala":1,
         "ayodhya":2,

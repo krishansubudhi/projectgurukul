@@ -3,6 +3,7 @@ sys.path.append(".")
 import dotenv
 dotenv.load_dotenv(".env")
 import streamlit as st
+from typing import Sequence
 from st_pages import Page, show_pages, add_page_title
 # st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered")
 # add_page_title('Project Gurukul')
@@ -15,7 +16,7 @@ show_pages(
     ]
 )
 from projectgurukul import corelib
-from projectgurukul.corelib import (SYSTEM_PROMPT, get_query_engines, get_empty_response) 
+from projectgurukul.corelib import (get_query_engines, get_empty_response, get_router_query_engine) 
 from pages.forum import post_thread, set_rendering_on
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
@@ -25,29 +26,39 @@ DEBUG = False
 def load_data(scripture):
     return get_query_engines(scripture=scripture, is_offline=False)
 
+@st.cache_resource
+def load_router_query_engine(scriptures):
+    return get_router_query_engine(scriptures=scriptures , is_offline=False)
+
 def get_source_str():
     return str.lower(st.session_state['source'][0])
 
 
 def update_source_query_engine():
-    if st.session_state['source']: 
-        st.session_state[CURRENT_QUERY_ENGINE] = load_data(get_source_str())
+    if st.session_state['source']:
+        print ("st.session_state['source']", st.session_state['source'])
+        if type(st.session_state['source']) == list  and len(st.session_state['source'])>1:
+            st.session_state[CURRENT_QUERY_ENGINE] = load_router_query_engine(scriptures=st.session_state['source'])
+            print("loading multi index query engine")
+        else:
+            print("loading single index query engine")
+            st.session_state[CURRENT_QUERY_ENGINE] = load_data(get_source_str())
     else:
         st.session_state[CURRENT_QUERY_ENGINE] = None
 
 with st.sidebar:
     # Multiselect 
     options = st.multiselect(
-    label='Select Source of Vedic Scripture',
+    label='Select Sources of Vedic Scripture',
     key='source',
-    default="Ramayana", 
+    default=['gita', 'ramayana'], 
     on_change=update_source_query_engine,
-    options = ['Gita', 'Ramayana'])
+    options = ['gita', 'ramayana'])
 
 update_source_query_engine()
 
 st.title("🕉️ Project Gurukul")
-st.caption("🚀 Select a source from the side bar and ask me anything from the selected scripture.")
+st.caption("🚀 Select one or more sources from the side bar and ask me anything from the selected scripture.")
 st.caption(f"📖 Currently fetching answers from {','.join(st.session_state['source'])}")
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "Ask me anything about life ?"}]
@@ -70,13 +81,14 @@ if prompt := st.chat_input():
             if DEBUG:
                 response = get_empty_response()
             else:
-                response = query_engine.query(prompt + SYSTEM_PROMPT)
+                response = query_engine.query(prompt)
         msg = response.response
         
         scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]
     
         sourcestr = (f"\n\nReferences:\n---\n")
         for i, source in enumerate(response.source_nodes):
+            scripture_info = corelib.get_scripture_from_source_metadata(source.node.metadata)
             sourcestr += f"\n\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}\n\n"
 
         msg = msg + sourcestr 

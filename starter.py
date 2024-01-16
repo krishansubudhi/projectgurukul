@@ -4,10 +4,12 @@ import sys
 sys.path.append(".")
 import dotenv
 dotenv.load_dotenv(".env")
+from projectgurukul import corelib
 from projectgurukul.corelib import (
     SCRIPTURE_MAPPING,
     SYSTEM_PROMPT,
-    get_query_engines)
+    get_query_engines,
+    get_router_query_engine)
 
 
 def main():
@@ -32,7 +34,8 @@ def main():
         logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
     scripture_info = SCRIPTURE_MAPPING[args.scripture]
-    query_engine = get_query_engines(args.scripture, is_offline=args.offline)
+    # query_engine = get_query_engines(args.scripture, is_offline=args.offline)
+    query_engine = get_router_query_engine(scriptures=SCRIPTURE_MAPPING.keys(), is_offline=args.offline)
     
     if len(sys.argv) < 3:
         print(
@@ -45,11 +48,13 @@ def main():
     response = query_engine.query(
         query)
     print("A:", response)
+    print(response.metadata)
     print(f"\n\nSources:\n")
     for i, source in enumerate(response.source_nodes):
+        scripture_info = corelib.get_scripture_from_source_metadata(source.node.metadata)
         # print(f"\n[{i+1}]:" ,{k:v for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display})
         print(f"\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}")
-        print(source.node.get_content()[:300], '...')
+        # print(source.node.get_content()[:300], '...')
 
 
 if __name__ == "__main__":
