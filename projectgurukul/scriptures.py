@@ -1,0 +1,118 @@
+from typing import Callable, Tuple, Dict, Any
+from abc import ABC, abstractmethod
+from llama_index import (
+    SimpleDirectoryReader,
+)
+from typing import Callable, Tuple, Any
+from projectgurukul.readers import CSVReader, RamayanaCSVReader
+
+
+
+
+def load_scripture_basics(directory):
+    return SimpleDirectoryReader(input_dir=directory).load_data()
+
+
+
+class Scripture(ABC):
+    ID: str = ""
+    NAME: str = ""
+    DIRECTORY: str = ""
+    METADATAS_TO_DISPLAY: Tuple[str] = ()
+    DESCRIPTION: str = ""
+
+    @abstractmethod
+    def create_source_link(self, metadata: Dict[str, str]) -> str:
+        ...
+
+    @abstractmethod
+    def get_reference_string(self, metadata: Dict[str, str]) -> str:
+        ...
+
+
+
+class Gita(Scripture):
+    ID = "gita"
+    NAME = "Bhagavad Gita"
+    DIRECTORY = "gita"
+    METADATAS_TO_DISPLAY = ('chapter', 'verse', 'source')
+    DESCRIPTION = "Holy scripture - Bhagavad Gita"
+
+    def load(self, directory):
+        def preprocess(row):
+            row['chapter'], row['verse'] = row.verse_number.split(', ')
+            return row
+
+        reader = CSVReader(text_columns=['verse_in_sanskrit', 'translation_in_english',
+                                        'meaning_in_english'], metadata_columns=['chapter', 'verse'], preprocess=preprocess)
+        documents = SimpleDirectoryReader(
+            input_dir=directory, file_extractor={".csv": reader}).load_data()
+        
+        for document in documents:
+            document.metadata["id"] = self.ID
+        return documents
+
+    def create_source_link(self, metadata: Dict[str, str]) -> str:
+
+        if 'chapter' in metadata and 'verse' in metadata:
+            chapter = metadata['chapter'].split()[-1]
+            verse = metadata['verse'].split()[-1]
+            return f"https://www.holy-bhagavad-gita.org/chapter/{chapter}/verse/{verse}"
+        else:
+            return None
+
+    def get_reference_string(self, metadata: Dict[str, str]) -> str:
+        if 'chapter' in metadata and 'verse' in metadata:
+            chapter = metadata['chapter'].split()[-1]
+            verse = metadata['verse'].split()[-1]
+            link = self.create_source_link(metadata)
+            return f"[{self.NAME}: Chapter {chapter}, Verse {verse}]({link})"
+        else:
+            return str(metadata)
+
+class Ramayana(Scripture):
+    ID = "ramayana"
+    NAME = "Valmiki Ramayana"
+    DIRECTORY = "ramayana"
+    METADATAS_TO_DISPLAY = ('kanda', 'sarga', 'source')
+    DESCRIPTION = "Epic poem - Valmiki Ramayana"
+    KANDA_MAPPINGS={
+        "bala":1,
+        "ayodhya":2,
+        "aranya": 3,
+        "kishkinda": 4,
+        "sundara": 5,
+        "yuddha": 6
+    }
+
+    def load(self, directory):
+        reader = RamayanaCSVReader()
+        documents = SimpleDirectoryReader(
+            input_dir=directory, file_extractor={".csv": reader}).load_data()
+        for document in documents:
+            document.metadata["kanda"] = document.metadata["file_name"].split('.')[
+                0].replace("kanda", " kanda")
+            document.metadata["id"] = self.ID
+        return documents
+
+
+    def create_source_link(self, metadata: Dict[str, str]) -> str:
+
+        if 'sarga' in metadata and 'kanda' in metadata:
+            kanda = metadata['kanda'].split()[0]
+            sarga = metadata['sarga']
+            kanda_numeric = self.KANDA_MAPPINGS[kanda]
+
+            return f"https://www.valmiki.iitk.ac.in/sloka?field_kanda_tid={kanda_numeric}&language=dv&field_sarga_value={sarga}"
+        else:
+            return None
+
+    def get_reference_string(self, metadata: Dict[str, str]) -> str:
+        if 'sarga' in metadata and 'kanda' in metadata:
+            kanda = metadata['kanda'].split()[0].capitalize()
+            sarga = metadata['sarga']
+
+            link = self.create_source_link(metadata)
+            return f"[{self.NAME}: {kanda} Kanda, Sarga {sarga}]({link})"
+        else:
+            return str(metadata)

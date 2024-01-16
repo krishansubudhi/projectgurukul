@@ -36,7 +36,7 @@ def main():
     
     if len(sys.argv) < 3:
         print(
-            "Usage: python main.py [--offline] 'Why Arjuna was confused?'")
+            "Usage: python main.py --question 'Why Arjuna was confused?' [--offline] [--debug]")
         sys.exit(1)
 
     query = args.question
@@ -45,10 +45,11 @@ def main():
     response = query_engine.query(
         query)
     print("A:", response)
-    print(f"\n\nSources: {scripture_info.name}")
+    print(f"\n\nSources:\n")
     for i, source in enumerate(response.source_nodes):
-        print(f"\n\n[{i+1}]:" ,{k:v for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display})
-        print(source.node.get_content()[:1000], '...')
+        # print(f"\n[{i+1}]:" ,{k:v for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display})
+        print(f"\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}")
+        print(source.node.get_content()[:300], '...')
 
 
 if __name__ == "__main__":

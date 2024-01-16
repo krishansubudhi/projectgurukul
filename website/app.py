@@ -75,10 +75,10 @@ if prompt := st.chat_input():
         
         scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]
     
-        sourcestr = (f"\n\nReferences:\n---\n{scripture_info.name}\n")
+        sourcestr = (f"\n\nReferences:\n---\n")
         for i, source in enumerate(response.source_nodes):
-            relevant_metadata = ", ".join([f"{k} : {v}" for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display])
-            sourcestr += f"\n\n[{i+1}]: {relevant_metadata}\n\n" #+ f"{source.node.get_content()[:200]} '...'"
+            sourcestr += f"\n\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}\n\n"
+
         msg = msg + sourcestr 
         st.session_state.messages.append({"role": "assistant", "content": msg})
         st.write(msg)
