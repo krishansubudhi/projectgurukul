@@ -3,13 +3,14 @@ sys.path.append(".")
 import dotenv
 dotenv.load_dotenv(".env")
 import streamlit as st
-from st_pages import Page, show_pages
-st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered")
+from st_pages import Page, show_pages, add_page_title
+# st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered")
+# add_page_title('Project Gurukul')
 # Specify what pages should be shown in the sidebar, and what their titles and icons
 # should be
 show_pages(
     [
-        Page("website/app.py", "Home", "🕉️"),
+        Page("website/app.py", "Gurukul", "🕉️"),
         Page("website/pages/forum.py", "Forum", ":books:"),
     ]
 )
