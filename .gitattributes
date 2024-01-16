@@ -1,6 +1,4 @@
 data/gita/.storage/*.json filter=lfs diff=lfs merge=lfs -text
 data/ramayana/.storage/*.json filter=lfs diff=lfs merge=lfs -text
-data/gita/.storage_instructembed/*.json filter=lfs diff=lfs merge=lfs -text
-data/ramayana/.storage_instructembed/*.json filter=lfs diff=lfs merge=lfs -text
-data/*/.storage/*.json filter=lfs diff=lfs merge=lfs -text
-data/*/.storage*/*.json filter=lfs diff=lfs merge=lfs -text
+# data/gita/.storage_instructembed/*.json filter=lfs diff=lfs merge=lfs -text
+# data/ramayana/.storage_instructembed/*.json filter=lfs diff=lfs merge=lfs -text
