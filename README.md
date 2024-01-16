@@ -23,6 +23,18 @@ conda install pip
 pip install -r requirements.txt
 ```
 
+
+## Large file upload
+https://git-lfs.com
+
+```
+brew install git-lfs
+git lfs install
+git lfs track "*.storage*"
+git add .gitattributes
+
+git lfs ls-files
+```
 ## Create OpenAI API Key [Optional]
 https://docs.llamaindex.ai/en/stable/getting_started/installation.html#important-openai-environment-setup
 
