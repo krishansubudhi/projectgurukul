@@ -9,3 +9,4 @@ argparse
 streamlit
 pymongo
 st-pages
+spacy
