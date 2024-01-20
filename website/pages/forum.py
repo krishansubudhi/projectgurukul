@@ -63,7 +63,7 @@ def render_forum():
                 st.markdown("## Q: {}".format(thread.question['content']))
                 st.markdown("### A: {} ".format(thread.answer['content']))
                 comment_box = st.expander("💬 Open comments")
-                st_disqus(shortname="gurukul-streamlit-app", identifier=str(thread._id.int))
+                st_disqus(shortname="gurukul-streamlit-app", identifier=str(thread._id.int), url="https://gurukul.streamlit.app/")
                 # # Show comments
                 # comment_box.write("**Comments:**")
                 # for comment_dict in thread.comments:
