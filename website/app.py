@@ -16,7 +16,7 @@ show_pages(
     ]
 )
 from projectgurukul import corelib
-from projectgurukul.corelib import (get_query_engines, get_empty_response, get_router_query_engine, get_fusion_query_engine) 
+from projectgurukul.corelib import (get_query_engines, get_empty_response, get_fusion_query_engine_trained_model, get_fusion_query_engine) 
 from pages.forum import post_thread, set_rendering_on
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
@@ -24,7 +24,7 @@ DEBUG = False
 
 @st.cache_resource
 def load_query_engine(scriptures):
-    return get_fusion_query_engine(scriptures=scriptures , is_offline=False, data_dir="data")
+    return get_fusion_query_engine_trained_model(scriptures=scriptures , is_offline=False, data_dir="data")
 
 def get_source_str():
     return str.lower(st.session_state['source'][0])

@@ -9,7 +9,7 @@ from projectgurukul.corelib import (
     SCRIPTURE_MAPPING,
     SYSTEM_PROMPT,
     get_query_engines,
-    get_router_query_engine,
+    get_fusion_query_engine_trained_model,
     get_fusion_query_engine)
 
 
@@ -37,7 +37,7 @@ def main():
     scriptures  = args.scripture.split(",")
     if len(scriptures) == 1:
         query_engine = get_query_engines(scriptures[0], is_offline=args.offline)
-    query_engine = get_fusion_query_engine(scriptures=scriptures, is_offline=args.offline)
+    query_engine = get_fusion_query_engine_trained_model(scriptures=scriptures, is_offline=args.offline)
     
     if len(sys.argv) < 3:
         print(
