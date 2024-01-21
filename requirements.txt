@@ -6,7 +6,7 @@ transformers[torch]
 InstructorEmbedding
 sentence_transformers
 argparse
-streamlit
+streamlit==1.30.0
 pymongo
 st-pages
 streamlit-disqus

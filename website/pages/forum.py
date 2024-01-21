@@ -53,6 +53,10 @@ def read_forum_data():
     threads = [ForumThread(**item) for item in items]
     return threads
 
+def get_random_threads():
+    items = client.test.threads.aggregate([{ "$sample": { "size": 3 } }])
+    return [ForumThread(**item) for item in items]
+
 def render_forum():
     threads = read_forum_data()
     with st.container(border=True):
