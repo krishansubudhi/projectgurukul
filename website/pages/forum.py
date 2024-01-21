@@ -57,13 +57,6 @@ def get_random_threads():
     items = client.test.threads.aggregate([{ "$sample": { "size": 3 } }])
     return [ForumThread(**item) for item in items]
 
-<<<<<<< HEAD
-=======
-def create_disqus_thread(page_url, page_identifier):
-    st_disqus(shortname="gurukul-streamlit-app", url=page_url, identifier=page_identifier)
-    return
-
->>>>>>> 638389c (Suggestions feature)
 def render_forum():
     threads = read_forum_data()
     with st.container(border=True):

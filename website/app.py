@@ -21,7 +21,7 @@ from pages.forum import post_thread, get_random_threads
 
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
-DEBUG = True
+DEBUG = False
 
 @st.cache_resource
 def load_query_engine(scriptures):
@@ -130,5 +130,4 @@ def render():
         message_len = len(st.session_state.messages)
         #post to forum button
         st.button("Post To Forum", on_click=post_to_forum, key ="post_to_forum_" + str(message_len - 1), args = (message_len-1,))
-
 render()
