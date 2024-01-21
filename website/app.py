@@ -17,7 +17,7 @@ show_pages(
 from projectgurukul import corelib
 
 from projectgurukul.corelib import (get_query_engines, get_empty_response, get_fusion_query_engine_trained_model, get_fusion_query_engine, get_router_query_engine) 
-from pages.forum import post_thread, get_random_threads
+from website.pages.forum import post_thread, get_random_threads
 
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
