@@ -65,7 +65,7 @@ def setup_service_context(is_offline):
     else:
         print("Using openAI models")
         # gpt-4-1106-preview, "gpt-3.5-turbo-1106"
-        llm = OpenAI(model="gpt-3.5-turbo-1106")
+        llm = OpenAI(model="gpt-3.5-turbo", max_retries = 1, timeout=40)
         service_context = ServiceContext.from_defaults(llm=llm)
         set_global_service_context(service_context)
         storage_dir = '.storage'
@@ -135,7 +135,8 @@ def get_fusion_retriever(scriptures, is_offline, data_dir="data"):
         similarity_top_k=similarity_top_k,
         mode="simple",  # TODO:Experiment with reciprocal rank
         num_queries=1,  # set this to 1 to disable query generation
-        use_async=True,
+        use_async=False,
+        verbose=True
         # query_gen_prompt="...",  # we could override the query generation prompt here
     )
     return retriever
@@ -152,7 +153,7 @@ def get_fusion_query_engine(scriptures, is_offline, data_dir="data"):
 def get_fusion_query_engine_trained_model(scriptures, is_offline, data_dir="data"):
     retriever = get_fusion_retriever(scriptures, is_offline, data_dir)
     trained_model_service_context = ServiceContext.from_defaults(
-        llm=OpenAI(model="ft:gpt-3.5-turbo-1106:macro-mate::8jTl73oZ")
+        llm=OpenAI(model="ft:gpt-3.5-turbo-1106:macro-mate::8jTl73oZ", max_retries = 1, timeout=30)
     )
     query_engine_trained_model = RetrieverQueryEngine.from_args(
         retriever,

@@ -3,7 +3,6 @@ sys.path.append(".")
 import dotenv
 dotenv.load_dotenv(".env")
 import streamlit as st
-from typing import Sequence
 from st_pages import Page, show_pages
 # st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered")
 # add_page_title('Project Gurukul')
@@ -16,7 +15,7 @@ show_pages(
     ]
 )
 from projectgurukul import corelib
-from projectgurukul.corelib import (get_query_engines, get_empty_response, get_fusion_query_engine_trained_model, get_fusion_query_engine) 
+from projectgurukul.corelib import (get_query_engines, get_empty_response, get_fusion_query_engine_trained_model, get_fusion_query_engine, get_router_query_engine) 
 from pages.forum import post_thread
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
@@ -32,7 +31,7 @@ def get_source_str():
 
 def update_source_query_engine():
     if st.session_state['source']:
-        print ("st.session_state['source']", st.session_state['source'])
+        # print ("st.session_state['source']", st.session_state['source'])
         st.session_state[CURRENT_QUERY_ENGINE] = load_query_engine(scriptures=st.session_state['source'])
     else:
         st.session_state[CURRENT_QUERY_ENGINE] = None
@@ -61,6 +60,7 @@ if prompt := st.chat_input():
     if not CURRENT_QUERY_ENGINE in st.session_state or  not st.session_state[CURRENT_QUERY_ENGINE]:
         st.info("Please select a source from the sidebar.")
         st.stop()
+    # print(st.session_state)
     query_engine = st.session_state[CURRENT_QUERY_ENGINE]
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
@@ -71,7 +71,10 @@ if prompt := st.chat_input():
             if DEBUG:
                 response = get_empty_response()
             else:
+                # print(f"querying query engine for \"{prompt}\"")
                 response = query_engine.query(prompt)
+                # print(response.response)
+
         msg = response.response
         
         scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]

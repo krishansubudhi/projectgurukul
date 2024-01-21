@@ -35,9 +35,7 @@ def main():
         logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
     scriptures  = args.scripture.split(",")
-    if len(scriptures) == 1:
-        query_engine = get_query_engines(scriptures[0], is_offline=args.offline)
-    query_engine = get_fusion_query_engine_trained_model(scriptures=scriptures, is_offline=args.offline)
+    query_engine = get_fusion_query_engine(scriptures=scriptures, is_offline=args.offline)
     
     if len(sys.argv) < 3:
         print(
@@ -49,6 +47,7 @@ def main():
 
     response = query_engine.query(
         query)
+    
     print("A:", response)
     print(response.metadata)
     print(f"\n\nSources:\n")
