@@ -4,7 +4,7 @@ import dotenv
 dotenv.load_dotenv(".env")
 import streamlit as st
 from typing import Sequence
-from st_pages import Page, show_pages, add_page_title
+from st_pages import Page, show_pages
 # st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered")
 # add_page_title('Project Gurukul')
 # Specify what pages should be shown in the sidebar, and what their titles and icons
@@ -17,7 +17,7 @@ show_pages(
 )
 from projectgurukul import corelib
 from projectgurukul.corelib import (get_query_engines, get_empty_response, get_fusion_query_engine_trained_model, get_fusion_query_engine) 
-from pages.forum import post_thread, set_rendering_on
+from pages.forum import post_thread
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
 DEBUG = False
@@ -53,7 +53,6 @@ st.caption("🚀 Select one or more sources from the side bar and ask me anythin
 st.caption(f"📖 Currently fetching answers from {','.join(st.session_state['source'])}")
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "Ask me anything about life ?"}]
-set_rendering_on()
 
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
@@ -88,14 +87,14 @@ if prompt := st.chat_input():
 
 #post to forum button
 if 'messages' in st.session_state and len(st.session_state.messages)>1:
-    def disable(b):
-        st.session_state["disabled_post_button"] = b
-    post_to_forum = st.button("Post To Forum", on_click=disable, disabled=st.session_state.get("disabled_post_button", False), args=(True,))
+    post_to_forum = st.button("Post To Forum")
     if post_to_forum:
         question = st.session_state.messages[-2]
         answer = st.session_state.messages[-1]
         post_thread(question, answer)
         st.toast(":green[**Posted your question and answer to forum.**]")
+        st.session_state['forum_scroll_section']="q-how-can-one-obtain-divine-qualities"
+        st.switch_page("pages/forum.py")
 
 #clear button to clear context 
 if 'messages' in st.session_state and len(st.session_state.messages)>1:

@@ -9,5 +9,6 @@ argparse
 streamlit
 pymongo
 st-pages
+streamlit-disqus
 spacy
 rank-bm25
