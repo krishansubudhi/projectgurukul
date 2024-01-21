@@ -66,8 +66,8 @@ def render_forum():
                 st.markdown("*{}*".format(thread.post_date.date()))
                 st.markdown("## Q: {}".format(thread.question['content']))
                 st.markdown("### A: {} ".format(thread.answer['content']))
-                # st.expander("💬 Open comments")
-                st_disqus(shortname="gurukul-streamlit-app", identifier=thread._id.int, url="https://gurukul.streamlit.app/forum#" + str(thread._id.int), title=thread.question)
+                create_disqus_thread("https://gurukul.streamlit.app/forum#" + str(thread._id.int), thread._id.int)
+                # with st.expander("💬 Open comments"):
                 # # Show comments
                 # comment_box.write("**Comments:**")
                 # for comment_dict in thread.comments:
