@@ -9,7 +9,8 @@ from projectgurukul.corelib import (
     SCRIPTURE_MAPPING,
     SYSTEM_PROMPT,
     get_query_engines,
-    get_router_query_engine)
+    get_router_query_engine,
+    get_fusion_query_engine)
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
     parser.add_argument('--debug', action='store_true',
                         help='print debug logs')
 
-    parser.add_argument('--scripture', type=str, default='ramayana',
+    parser.add_argument('--scripture', type=str, default='ramayana,gita',
                         help='The scripture to fetch answers from (default: ramayana)',
                         choices=SCRIPTURE_MAPPING.keys())
 
@@ -33,9 +34,10 @@ def main():
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
         logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
-    scripture_info = SCRIPTURE_MAPPING[args.scripture]
-    # query_engine = get_query_engines(args.scripture, is_offline=args.offline)
-    query_engine = get_router_query_engine(scriptures=SCRIPTURE_MAPPING.keys(), is_offline=args.offline)
+    scriptures  = args.scripture.split(",")
+    if len(scriptures) == 1:
+        query_engine = get_query_engines(scriptures[0], is_offline=args.offline)
+    query_engine = get_fusion_query_engine(scriptures=scriptures, is_offline=args.offline)
     
     if len(sys.argv) < 3:
         print(
@@ -52,7 +54,6 @@ def main():
     print(f"\n\nSources:\n")
     for i, source in enumerate(response.source_nodes):
         scripture_info = corelib.get_scripture_from_source_metadata(source.node.metadata)
-        # print(f"\n[{i+1}]:" ,{k:v for k,v in source.node.metadata.items() if k in scripture_info.metadatas_to_display})
         print(f"\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}")
         # print(source.node.get_content()[:300], '...')
 

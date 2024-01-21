@@ -14,7 +14,7 @@ def get_device_and_dtype():
     return device, dtype
 
 
-def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256, system_prompt = None):
+def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256, system_prompt = ""):
     def messages_to_prompt(messages: ChatMessage):
         messages_dict = [
                     {"role": message.role.value, "content": message.content}
@@ -50,7 +50,7 @@ def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256, system_prompt
 
 
 
-def get_phi2_llm(context_window = 2048, max_new_tokens = 256, system_prompt = None):
+def get_phi2_llm(context_window = 2048, max_new_tokens = 256, system_prompt = ""):
 
     role_maps = {
         "system" :"Instructions",

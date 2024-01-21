@@ -16,19 +16,15 @@ show_pages(
     ]
 )
 from projectgurukul import corelib
-from projectgurukul.corelib import (get_query_engines, get_empty_response, get_router_query_engine) 
+from projectgurukul.corelib import (get_query_engines, get_empty_response, get_router_query_engine, get_fusion_query_engine) 
 from pages.forum import post_thread, set_rendering_on
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
 DEBUG = False
 
 @st.cache_resource
-def load_data(scripture):
-    return get_query_engines(scripture=scripture, is_offline=False)
-
-@st.cache_resource
-def load_router_query_engine(scriptures):
-    return get_router_query_engine(scriptures=scriptures , is_offline=False)
+def load_query_engine(scriptures):
+    return get_fusion_query_engine(scriptures=scriptures , is_offline=False, data_dir="data")
 
 def get_source_str():
     return str.lower(st.session_state['source'][0])
@@ -37,12 +33,7 @@ def get_source_str():
 def update_source_query_engine():
     if st.session_state['source']:
         print ("st.session_state['source']", st.session_state['source'])
-        if type(st.session_state['source']) == list  and len(st.session_state['source'])>1:
-            st.session_state[CURRENT_QUERY_ENGINE] = load_router_query_engine(scriptures=st.session_state['source'])
-            print("loading multi index query engine")
-        else:
-            print("loading single index query engine")
-            st.session_state[CURRENT_QUERY_ENGINE] = load_data(get_source_str())
+        st.session_state[CURRENT_QUERY_ENGINE] = load_query_engine(scriptures=st.session_state['source'])
     else:
         st.session_state[CURRENT_QUERY_ENGINE] = None
 
@@ -86,7 +77,7 @@ if prompt := st.chat_input():
         
         scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]
     
-        sourcestr = (f"\n\nReferences:\n---\n")
+        sourcestr = (f"\n\n**References:**\n")
         for i, source in enumerate(response.source_nodes):
             scripture_info = corelib.get_scripture_from_source_metadata(source.node.metadata)
             sourcestr += f"\n\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}\n\n"

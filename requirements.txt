@@ -10,3 +10,4 @@ streamlit
 pymongo
 st-pages
 spacy
+rank-bm25
