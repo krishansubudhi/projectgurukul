@@ -57,10 +57,6 @@ def get_random_threads():
     items = client.test.threads.aggregate([{ "$sample": { "size": 3 } }])
     return [ForumThread(**item) for item in items]
 
-def create_disqus_thread(page_url, page_identifier):
-    st_disqus(shortname="gurukul-streamlit-app", url=page_url, identifier=page_identifier)
-    return
-
 def render_forum():
     threads = read_forum_data()
     with st.container(border=True):
@@ -70,8 +66,8 @@ def render_forum():
                 st.markdown("*{}*".format(thread.post_date.date()))
                 st.markdown("## Q: {}".format(thread.question['content']))
                 st.markdown("### A: {} ".format(thread.answer['content']))
-                create_disqus_thread("https://gurukul.streamlit.app/forum#" + str(thread._id.int), thread._id.int)
-                # with st.expander("💬 Open comments"):
+                # st.expander("💬 Open comments")
+                st_disqus(shortname="gurukul-streamlit-app", identifier=thread._id.int, url="https://gurukul.streamlit.app/forum#" + str(thread._id.int), title=thread.question)
                 # # Show comments
                 # comment_box.write("**Comments:**")
                 # for comment_dict in thread.comments:
