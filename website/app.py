@@ -59,7 +59,7 @@ def post_to_forum(i):
     post_thread(question, answer)
     st.toast(":green[**Posted your question and answer to forum.**]")
     st.session_state['forum_scroll_section']="q-how-can-one-obtain-divine-qualities"
-    st.switch_page("pages/forum.py")
+    st.switch_page("Forum")
 
 def generate_response(container, prompt):
     with container.chat_message("assistant"):
