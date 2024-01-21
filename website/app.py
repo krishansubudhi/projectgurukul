@@ -56,10 +56,10 @@ def post_to_forum(i):
     answer = st.session_state.messages[i]
     print(question)
     print(answer)
-    # post_thread(question, answer)
+    post_thread(question, answer)
     st.toast(":green[**Posted your question and answer to forum.**]")
     st.session_state['forum_scroll_section']="q-how-can-one-obtain-divine-qualities"
-    st.switch_page("pages/forum.py")
+    st.switch_page("Forum")
 
 def generate_response(container, prompt):
     with container.chat_message("assistant"):
@@ -73,6 +73,7 @@ def generate_response(container, prompt):
                 sourcestr += f"\n\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}\n\n"
             msg = msg + sourcestr 
             st.session_state.messages.append({"role": "assistant", "content": msg})
+            st.write(msg)
             
 
 with st.sidebar:
@@ -100,16 +101,15 @@ def suggestion_clicked(question):
     chat_container.chat_message("user").write(question)
     generate_response(chat_container, question)
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "Ask me anything about life ?"}]
-
-if len(st.session_state["messages"]) < 2:
-    suggestion_children.write("Suggestions💡:")
-    random_threads = get_random_threads()
-    for thread in random_threads:
-        suggestion_children.button(label=thread.question['content'], on_click=suggestion_clicked, type="primary", args=(thread.question['content'],),key = thread._id.int)
-
 def render():
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = [{"role": "assistant", "content": "Ask me anything about life ?"}]
+
+    if len(st.session_state["messages"]) < 2:
+        suggestion_children.write("Suggestions💡:")
+        random_threads = get_random_threads()
+        for thread in random_threads:
+            suggestion_children.button(label=thread.question['content'], on_click=suggestion_clicked, type="primary", args=(thread.question['content'],),key = thread._id.int)
     for i, msg in enumerate(st.session_state.messages):
         with st.container():
             with chat_container.chat_message(msg["role"]):
@@ -117,11 +117,15 @@ def render():
                 if i!=0 and i % 2 == 0:
                     #post to forum button
                     st.button("Post To Forum", on_click=post_to_forum, key ="post_to_forum_" + str(i), args = (i,))
+    if prompt := st.chat_input():
+        print(prompt)
+        chat_container.chat_message('user').write(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        generate_response(chat_container, prompt)
+        #post to forum button
+        chat_container.button("Post To Forum", on_click=post_to_forum, key ="post_to_forum_" + str(len(st.session_state.messages)-1), args = (len(st.session_state.messages)-1,))
     #clear button to clear context 
     if len(st.session_state.messages) > 1:
         st.button("Clear All 🗑", on_click=clear_state_messages)
-    if prompt := st.chat_input():
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        generate_response(chat_container, prompt)
 
 render()
