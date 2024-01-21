@@ -15,11 +15,11 @@ show_pages(
     ]
 )
 from projectgurukul import corelib
-from projectgurukul.corelib import (get_query_engines, get_empty_response, get_fusion_query_engine_trained_model, get_fusion_query_engine, get_router_query_engine) 
+from projectgurukul.corelib import (get_query_engines, get_empty_response, get_fusion_query_engine_trained_model, get_fusion_query_engine) 
 from pages.forum import post_thread, get_random_threads
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
-DEBUG = False
+DEBUG = True
 
 @st.cache_resource
 def load_query_engine(scriptures):
@@ -59,7 +59,7 @@ def post_to_forum(i):
     post_thread(question, answer)
     st.toast(":green[**Posted your question and answer to forum.**]")
     st.session_state['forum_scroll_section']="q-how-can-one-obtain-divine-qualities"
-    st.switch_page("Forum")
+    st.switch_page("pages/forum.py")
 
 def generate_response(container, prompt):
     with container.chat_message("assistant"):
@@ -101,6 +101,7 @@ def suggestion_clicked(question):
     chat_container.chat_message("user").write(question)
     generate_response(chat_container, question)
 
+
 def render():
     if "messages" not in st.session_state:
         st.session_state["messages"] = [{"role": "assistant", "content": "Ask me anything about life ?"}]
@@ -117,15 +118,15 @@ def render():
                 if i!=0 and i % 2 == 0:
                     #post to forum button
                     st.button("Post To Forum", on_click=post_to_forum, key ="post_to_forum_" + str(i), args = (i,))
-    if prompt := st.chat_input():
-        print(prompt)
-        chat_container.chat_message('user').write(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        generate_response(chat_container, prompt)
-        #post to forum button
-        chat_container.button("Post To Forum", on_click=post_to_forum, key ="post_to_forum_" + str(len(st.session_state.messages)-1), args = (len(st.session_state.messages)-1,))
     #clear button to clear context 
     if len(st.session_state.messages) > 1:
         st.button("Clear All 🗑", on_click=clear_state_messages)
+    if prompt := st.chat_input():
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        chat_container.chat_message('user').write(prompt)
+        generate_response(chat_container, prompt)
+        message_len = len(st.session_state.messages)
+        #post to forum button
+        st.button("Post To Forum", on_click=post_to_forum, key ="post_to_forum_" + str(message_len - 1), args = (message_len-1,))
 
 render()
