@@ -48,7 +48,7 @@ def add_comment_to_forum(thread: ForumThread, comment: Comment):
 # Uses st.cache_data to only rerun when the query changes or after ttl 
 @st.cache_data(ttl=10)
 def read_forum_data():
-    items = client.test.threads.find()
+    items = client.test.threads.find().sort('post_date',pymongo.DESCENDING)
     items = list(items)  # make hashable for st.cache_data
     threads = [ForumThread(**item) for item in items]
     return threads

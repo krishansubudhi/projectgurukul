@@ -35,7 +35,7 @@ def main():
         logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
     scriptures  = args.scripture.split(",")
-    query_engine = get_fusion_query_engine(scriptures=scriptures, is_offline=args.offline)
+    query_engine = get_fusion_query_engine_trained_model(scriptures=scriptures, is_offline=args.offline)
     
     if len(sys.argv) < 3:
         print(
