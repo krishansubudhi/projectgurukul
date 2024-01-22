@@ -62,35 +62,34 @@ def render_forum():
     with st.sidebar:
         st.markdown(footer_html, unsafe_allow_html=True)
     threads = read_forum_data()
-    with st.container(border=True):
-        st.markdown("# All Threads")
+    with st.container(border=False):
         for thread in threads:
             with st.container(border=True):
                 st.markdown("*{}*".format(thread.post_date.date()))
                 st.markdown("## Q: {}".format(thread.question['content']))
                 st.markdown("### A: {} ".format(thread.answer['content']))
-                # st.expander("💬 Open comments")
-                st_disqus(shortname="gurukul-streamlit-app", identifier=thread._id.int, url="https://gurukul.streamlit.app/forum#" + str(thread._id.int), title=thread.question)
-                # # Show comments
-                # comment_box.write("**Comments:**")
-                # for comment_dict in thread.comments:
-                #     comment = Comment(**comment_dict)
-                #     comment_box.markdown("{} - {}> {}".format(comment.userid,
-                #                 comment.post_date, comment.comment))
-                # with st.form("comment_box" + str(thread._id), clear_on_submit=True, border=True):
-                #     comment_text = st.text_input("Enter comment here")
-                #     submitted = st.form_submit_button(
-                #         ":green[Post Comment]")
-                #     if submitted:
-                #         if comment_text == "":
-                #             st.toast(":red[☝️ Your comment cannot be empty.]")
-                #         else:
-                #             comment = Comment(
-                #                 _id=uuid4(), comment=comment_text, post_date=datetime.now(), userid="test_user")
-                #             if add_comment_to_forum(thread, comment):
-                #                 comment_box.write(
-                #                     "{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
-                #                 st.toast(":green[☝️ Your comment was successfully posted.]")
+                comment_box = st.expander("💬 Open comments")
+                # st_disqus(shortname="gurukul-streamlit-app", identifier=thread._id.int, url="https://gurukul.streamlit.app/forum#" + str(thread._id.int), title=thread.question)
+                # Show comments
+                comment_box.write("**Comments:**")
+                for comment_dict in thread.comments:
+                    comment = Comment(**comment_dict)
+                    comment_box.markdown("{} - {}> {}".format(comment.userid,
+                                comment.post_date, comment.comment))
+                with st.form("comment_box" + str(thread._id), clear_on_submit=True, border=True):
+                    comment_text = st.text_input("Enter comment here")
+                    submitted = st.form_submit_button(
+                        ":green[Post Comment]")
+                    if submitted:
+                        if comment_text == "":
+                            st.toast(":red[☝️ Your comment cannot be empty.]")
+                        else:
+                            comment = Comment(
+                                _id=uuid4(), comment=comment_text, post_date=datetime.now(), userid="test_user")
+                            if add_comment_to_forum(thread, comment):
+                                comment_box.write(
+                                    "{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
+                                st.toast(":green[☝️ Your comment was successfully posted.]")
 
 if 'forum_render' in st.session_state:
     st.title("📝 Gurukul Forum")
