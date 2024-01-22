@@ -67,7 +67,7 @@ def post_to_forum(i):
     post_thread(question, answer)
     st.toast(":green[**Posted your question and answer to forum.**]")
     st.session_state['forum_scroll_section']="q-how-can-one-obtain-divine-qualities"
-    st.switch_page("pages/forum.py")
+    # st.switch_page("pages/forum.py")
 
 def generate_response(container, prompt):
     if not CURRENT_QUERY_ENGINE in st.session_state or  not st.session_state[CURRENT_QUERY_ENGINE]:
@@ -94,6 +94,7 @@ with st.sidebar:
 
 update_source_query_engine()
 
+st.image("website/images/gurukul2.jpeg")
 st.title("🕉️ Project Gurukul")
 st.caption("🚀 Select one or more sources from the side bar and ask me anything from the selected scripture.")
 st.caption(f"📖 Currently fetching answers from {','.join(st.session_state['source'])}")

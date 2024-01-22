@@ -33,7 +33,20 @@ def init_connection():
 client = init_connection()
 
 def post_thread(question:str, answer:str):
-    add_thread_to_forum(ForumThread(_id = uuid4(), question=question, answer=answer, comments=[], post_date=datetime.now()))
+    threads_collection = client.test.threads
+
+    existing_thread = threads_collection.find_one({"question": question})
+
+    if existing_thread:
+        # Thread with the same question exists
+        if existing_thread["answer"] != answer:
+            # Answer is different, update the post_date
+            threads_collection.update_one({"_id": existing_thread["_id"]}, {"$set": {"post_date": datetime.now()}})
+        # else: answer is the same, or update_if_exists is False, do nothing
+    else:
+        # Thread doesn't exist, insert a new one
+        add_thread_to_forum(ForumThread(_id = uuid4(), question=question, answer=answer, comments=[], post_date=datetime.now()))
+        
 
 def add_thread_to_forum(thread: ForumThread):
     threads_collection = client.test.threads
