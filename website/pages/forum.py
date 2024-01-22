@@ -4,6 +4,7 @@ from dataclasses import dataclass, asdict
 from uuid import uuid4
 from datetime import datetime
 from streamlit_disqus import st_disqus
+from website.footer import footer_html
 
 @dataclass
 class Comment:
@@ -58,6 +59,8 @@ def get_random_threads():
     return [ForumThread(**item) for item in items]
 
 def render_forum():
+    with st.sidebar:
+        st.markdown(footer_html, unsafe_allow_html=True)
     threads = read_forum_data()
     with st.container(border=True):
         st.markdown("# All Threads")

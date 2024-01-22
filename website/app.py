@@ -4,6 +4,7 @@ import dotenv
 dotenv.load_dotenv(".env")
 import streamlit as st
 from st_pages import Page, show_pages
+from website.footer import footer_html
 # st.set_page_config(page_title='Project Gurukul', page_icon="🕉️", layout="centered")
 # add_page_title('Project Gurukul')
 # Specify what pages should be shown in the sidebar, and what their titles and icons
@@ -89,6 +90,8 @@ with st.sidebar:
     on_change=update_source_query_engine,
     options = ['gita', 'ramayana'])
 
+    st.markdown(footer_html, unsafe_allow_html=True)
+
 update_source_query_engine()
 
 st.title("🕉️ Project Gurukul")
@@ -132,3 +135,4 @@ def render():
         #post to forum button
         st.button("Post To Forum", on_click=post_to_forum, key ="post_to_forum_" + str(message_len - 1), args = (message_len-1,))
 render()
+
