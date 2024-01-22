@@ -37,18 +37,23 @@ def update_source_query_engine():
     else:
         st.session_state[CURRENT_QUERY_ENGINE] = None
 
-def get_response(container, prompt):
+@st.cache_data(max_entries=50, show_spinner=False)
+def get_response(prompt:str) -> str:
     # TODO: User chat engine. Query engine does not take context.
     # https://docs.llamaindex.ai/en/stable/api_reference/query/chat_engines.html
-    if not CURRENT_QUERY_ENGINE in st.session_state or  not st.session_state[CURRENT_QUERY_ENGINE]:
-        container.info("Please select a source from the sidebar.")
-        container.stop()
+    query_engine = st.session_state[CURRENT_QUERY_ENGINE]
+    if DEBUG:
+        response =  get_empty_response()
     else:
-        query_engine = st.session_state[CURRENT_QUERY_ENGINE]
-        if DEBUG:
-            return get_empty_response()
-        else:
-            return query_engine.query(prompt)
+        response = query_engine.query(prompt)
+    msg = response.response
+    scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]
+    sourcestr = (f"\n\nReferences:\n---\n")
+    for i, source in enumerate(response.source_nodes):
+        scripture_info = corelib.get_scripture_from_source_metadata(source.node.metadata)
+        sourcestr += f"\n\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}\n\n"
+    msg = msg + sourcestr 
+    return msg
 
 def clear_state_messages():
     del st.session_state.messages
@@ -64,18 +69,15 @@ def post_to_forum(i):
     st.switch_page("pages/forum.py")
 
 def generate_response(container, prompt):
-    with container.chat_message("assistant"):
-        with st.spinner("Breathe in, breathe out, you're getting there 🧘‍♂️"):
-            response = get_response(container, prompt) 
-            msg = response.response
-            scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]
-            sourcestr = (f"\n\nReferences:\n---\n")
-            for i, source in enumerate(response.source_nodes):
-                scripture_info = corelib.get_scripture_from_source_metadata(source.node.metadata)
-                sourcestr += f"\n\n[{i+1}]: {scripture_info.get_reference_string(source.node.metadata)}\n\n"
-            msg = msg + sourcestr 
-            st.session_state.messages.append({"role": "assistant", "content": msg})
-            st.write(msg)
+    if not CURRENT_QUERY_ENGINE in st.session_state or  not st.session_state[CURRENT_QUERY_ENGINE]:
+        container.info("Please select a source from the sidebar.")
+        container.stop()
+    else:
+        with container.chat_message("assistant"):
+            with st.spinner("Breathe in, breathe out, you're getting there 🧘‍♂️"):
+                response_msg = get_response(prompt) 
+                st.session_state.messages.append({"role": "assistant", "content": response_msg})
+                st.write(response_msg)
             
 
 with st.sidebar:
@@ -93,16 +95,15 @@ st.title("🕉️ Project Gurukul")
 st.caption("🚀 Select one or more sources from the side bar and ask me anything from the selected scripture.")
 st.caption(f"📖 Currently fetching answers from {','.join(st.session_state['source'])}")
 
-suggestion_container = st.empty()
 suggestion_children = st.container()
 chat_container = st.container()
 
-def suggestion_clicked(question):
-    suggestion_container.empty()
+def suggestion_clicked(question , answer):
     st.session_state.messages.append({"role": "user", "content": question})
+    st.session_state.messages.append({"role": "assistant", "content": answer})
     chat_container.chat_message("user").write(question)
-    generate_response(chat_container, question)
-
+    chat_container.chat_message("assistant").write(answer)
+    # generate_response(chat_container, question)
 
 def render():
     if "messages" not in st.session_state:
@@ -112,7 +113,7 @@ def render():
         suggestion_children.write("Suggestions💡:")
         random_threads = get_random_threads()
         for thread in random_threads:
-            suggestion_children.button(label=thread.question['content'], on_click=suggestion_clicked, type="primary", args=(thread.question['content'],),key = thread._id.int)
+            suggestion_children.button(label=thread.question['content'], on_click=suggestion_clicked, type="primary", args=(thread.question['content'], thread.answer['content']),key = thread._id.int)
     for i, msg in enumerate(st.session_state.messages):
         with st.container():
             with chat_container.chat_message(msg["role"]):

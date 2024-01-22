@@ -8,7 +8,7 @@ sentence_transformers
 argparse
 streamlit==1.30.0
 pymongo
-st-pages
+st-pages==0.4.5
 streamlit-disqus
 spacy
 rank-bm25
