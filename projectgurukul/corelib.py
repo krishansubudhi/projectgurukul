@@ -121,8 +121,15 @@ def get_fusion_retriever(scriptures, is_offline, data_dir="data"):
         BOOK_DIR = f"{data_dir}/{scripture_info.DIRECTORY}/"
         persist_dir = BOOK_DIR + storage_dir
 
-        index = load_index_from_storage(
-            StorageContext.from_defaults(persist_dir=persist_dir))
+        if not os.path.exists(persist_dir):
+            documents = scripture_info.load(BOOK_DIR + "data")
+            print("Creating one-time document index ...")
+            index = VectorStoreIndex.from_documents(documents)
+            print("Finished creating document index.")
+            index.storage_context.persist(persist_dir=persist_dir)
+        else:
+            index = load_index_from_storage(
+                StorageContext.from_defaults(persist_dir=persist_dir))
         vector_retriever = index.as_retriever(
             similarity_top_k=similarity_top_k)
         # bm25_retriever = BM25Retriever.from_defaults(
