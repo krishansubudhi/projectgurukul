@@ -104,8 +104,9 @@ def render_forum():
                                     "{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
                                 st.toast(":green[☝️ Your comment was successfully posted.]")
 
+
+set_rendering_on()
+
 if 'forum_render' in st.session_state:
     st.title("📝 Gurukul Forum")
     render_forum()
-
-set_rendering_on()
