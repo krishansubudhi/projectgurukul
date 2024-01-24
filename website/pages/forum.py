@@ -1,112 +1,74 @@
 import streamlit as st
-import pymongo
-from dataclasses import dataclass, asdict
+
 from uuid import uuid4
 from datetime import datetime
 from streamlit_disqus import st_disqus
 from website.footer import footer_html
+from website import mongo_utils, constants
+# st.set_page_config(page_title='Gurukul Forum', page_icon=":books:", layout="centered")
 
-@dataclass
-class Comment:
-    _id: uuid4
-    userid: str
-    comment: str
-    post_date: datetime
-
-@dataclass
-class ForumThread:
-    _id: uuid4
-    post_date: datetime
-    question: str
-    answer: str
-    comments: list[Comment]
-
-def set_rendering_on():
-    if 'forum_render' not in st.session_state:
-        st.session_state['forum_render'] = True 
-
-# Initialize connection.
-@st.cache_resource
-def init_connection():
-    return pymongo.MongoClient(st.secrets['MONGO_DB_CONNECTION_URL'], uuidRepresentation='standard')
-
-client = init_connection()
-
-def post_thread(question:str, answer:str):
-    threads_collection = client.test.threads
-
-    existing_thread = threads_collection.find_one({"question": question})
-
-    if existing_thread:
-        # Thread with the same question exists
-        if existing_thread["answer"] != answer:
-            # Answer is different, update the post_date
-            threads_collection.update_one({"_id": existing_thread["_id"]}, {"$set": {"post_date": datetime.now()}})
-        # else: answer is the same, or update_if_exists is False, do nothing
-    else:
-        # Thread doesn't exist, insert a new one
-        add_thread_to_forum(ForumThread(_id = uuid4(), question=question, answer=answer, comments=[], post_date=datetime.now()))
-        
-
-def add_thread_to_forum(thread: ForumThread):
-    threads_collection = client.test.threads
-    threads_collection.insert_one(asdict(thread))
-
-def add_comment_to_forum(thread: ForumThread, comment: Comment):
-    threads_collection = client.test.threads
-    thread.comments.append(comment)
-    return threads_collection.find_one_and_update(filter={'_id': thread._id}, update={
-                                           '$push': {'comments': asdict(comment)}}, upsert=True)
-
-# Pull data from the collection.
-# Uses st.cache_data to only rerun when the query changes or after ttl 
-@st.cache_data(ttl=10)
-def read_forum_data():
-    items = client.test.threads.find().sort('post_date',pymongo.DESCENDING)
-    items = list(items)  # make hashable for st.cache_data
-    threads = [ForumThread(**item) for item in items]
-    return threads
-
-def get_random_threads():
-    items = client.test.threads.aggregate([{ "$sample": { "size": 3 } }])
-    return [ForumThread(**item) for item in items]
+if 'question' not in st.session_state:
+    st.set_page_config(page_title='Gurukul Forum', page_icon=":books:", layout="centered")
+else:
+    print("session state contains question.")
+    st.set_page_config(page_title=st.session_state["question"], page_icon="❓", layout="centered")
 
 def render_forum():
+    mongo_client = mongo_utils.get_mongo_client()
     with st.sidebar:
         st.markdown(footer_html, unsafe_allow_html=True)
-    threads = read_forum_data()
+    threads = mongo_utils.read_forum_data(mongo_client)
     with st.container(border=False):
         for thread in threads:
             with st.container(border=True):
-                st.markdown("*{}*".format(thread.post_date.date()))
-                st.markdown("## Q: {}".format(thread.question['content']))
-                st.markdown("### A: {} ".format(thread.answer['content']))
-                comment_box = st.expander("💬 Open comments")
+                show_thread(mongo_client, thread)
+
+def show_thread(mongo_client, thread: mongo_utils.ForumThread):
+    st.markdown("*{}*".format(thread.post_date.date()))
+    st.markdown("## Q: {}".format(thread.question['content']))
+    st.markdown("### A: {} ".format(thread.answer['content']))
+    comment_box = st.expander("💬 Open comments")
                 # st_disqus(shortname="gurukul-streamlit-app", identifier=thread._id.int, url="https://gurukul.streamlit.app/forum#" + str(thread._id.int), title=thread.question)
                 # Show comments
-                comment_box.write("**Comments:**")
-                for comment_dict in thread.comments:
-                    comment = Comment(**comment_dict)
-                    comment_box.markdown("{} - {}> {}".format(comment.userid,
+    comment_box.write("**Comments:**")
+    for comment_dict in thread.comments:
+        comment = mongo_utils.Comment(**comment_dict)
+        comment_box.markdown("{} - {}> {}".format(comment.userid,
                                 comment.post_date, comment.comment))
-                with st.form("comment_box" + str(thread._id), clear_on_submit=True, border=True):
-                    comment_text = st.text_input("Enter comment here")
-                    submitted = st.form_submit_button(
+    with st.form("comment_box" + str(thread._id), clear_on_submit=True, border=True):
+        comment_text = st.text_input("Enter comment here")
+        submitted = st.form_submit_button(
                         ":green[Post Comment]")
-                    if submitted:
-                        if comment_text == "":
-                            st.toast(":red[☝️ Your comment cannot be empty.]")
-                        else:
-                            comment = Comment(
+        if submitted:
+            if comment_text == "":
+                st.toast(":red[☝️ Your comment cannot be empty.]")
+            else:
+                comment = mongo_utils.Comment(
                                 _id=uuid4(), comment=comment_text, post_date=datetime.now(), userid="test_user")
-                            if add_comment_to_forum(thread, comment):
-                                comment_box.write(
+                if mongo_utils.add_comment_to_forum(mongo_client, thread, comment):
+                    comment_box.write(
                                     "{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
-                                st.toast(":green[☝️ Your comment was successfully posted.]")
+                    st.toast(":green[☝️ Your comment was successfully posted.]")
 
 
-set_rendering_on()
-
-if 'forum_render' in st.session_state:
+all_params = st.query_params.to_dict()
+# print(all_params)
+if 'thread_id' not in all_params:
     st.title("📝 Gurukul Forum")
     render_forum()
+else:
+    mongo_client = mongo_utils.get_mongo_client()
+    thread = mongo_utils.find_thread_by_id(mongo_client, all_params["thread_id"])
+    if thread:
+        rerun = False
+        if "question" not in st.session_state:
+            rerun = True
+        st.session_state["question"] = thread.question["content"]
+        if rerun:
+            st.rerun()
+        
+        show_thread(mongo_client, thread)
+    else:
+        st.error(f"No post found with id {all_params['thread_id']}")
+    
+    st.link_button("All posts", f"{constants.SITE_BASE_URL}/forum")
