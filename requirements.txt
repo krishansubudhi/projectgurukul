@@ -13,3 +13,4 @@ streamlit-disqus
 spacy
 rank-bm25
 pyperclip
+streamlit-component-lib

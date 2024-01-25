@@ -5,6 +5,7 @@ from datetime import datetime
 from streamlit_disqus import st_disqus
 from website.footer import footer_html
 from website import mongo_utils, constants
+from streamlit_components import social_share_widget
 # st.set_page_config(page_title='Gurukul Forum', page_icon=":books:", layout="centered")
 
 if 'question' not in st.session_state:
@@ -27,6 +28,12 @@ def show_thread(mongo_client, thread: mongo_utils.ForumThread):
     st.markdown("*{}*".format(thread.post_date.date()))
     st.markdown("## Q: {}".format(thread.question['content']))
     st.markdown("### A: {} ".format(thread.answer['content']))
+    url = f"{constants.SITE_BASE_URL}/forum?thread_id={thread._id}"
+    st.markdown(f" 🔗 Post [link]({url})")
+    result = social_share_widget(thread.question['content'], thread.answer["content"][:500]+"...", url)
+    if result == "copy":
+        st.toast("copied share text to clipboard.")
+
     comment_box = st.expander("💬 Open comments")
                 # st_disqus(shortname="gurukul-streamlit-app", identifier=thread._id.int, url="https://gurukul.streamlit.app/forum#" + str(thread._id.int), title=thread.question)
                 # Show comments
