@@ -78,6 +78,12 @@ def generate_response(container, prompt):
                 st.session_state.messages.append(
                     {"role": "assistant", "content": response_msg})
                 st.write(response_msg)
+                i = len(st.session_state.messages)-1
+                question = st.session_state.messages[i - 1]
+                answer = st.session_state.messages[i]
+                # post to forum button
+                if st.button("Share", key=f"share_{i}", type = "primary"):
+                    share(question, answer)
 
 
 with st.sidebar:
@@ -153,12 +159,6 @@ def render():
         st.session_state.messages.append({"role": "user", "content": prompt})
         chat_container.chat_message('user').write(prompt)
         generate_response(chat_container, prompt)
-        i = len(st.session_state.messages)-1
-        question = st.session_state.messages[i - 1]
-        answer = st.session_state.messages[i]
-        # post to forum button
-        if st.button("Share", key=f"share_{i}"):
-            share(question, answer)
 
 
 render()
