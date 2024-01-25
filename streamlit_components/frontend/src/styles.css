@@ -1,0 +1,20 @@
+/* styles.css */
+
+.social-share-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    height: 50px;
+  }
+  
+  .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0px;
+    font-size: 24px;
+    margin: 10px ;
+    color: var(--secondary-color);
+    margin:0;
+  }
+  

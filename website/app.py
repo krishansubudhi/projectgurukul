@@ -12,18 +12,12 @@ from website.footer import footer_html
 from st_pages import Page, show_pages
 import streamlit as st
 
+from streamlit_components import social_share_widget
+
+
 st.set_page_config(page_title='Project Gurukul',
                    page_icon="🕉️", layout="centered")
 
-
-# Specify what pages should be shown in the sidebar, and what their titles and icons
-# should be
-# show_pages(
-#     [
-#         Page("website/app.py", "Gurukul", "🕉️"),
-#         Page("website/pages/forum.py", "Forum", ":books:"),
-#     ]
-# )
 
 
 CURRENT_QUERY_ENGINE = 'curr_query_engine'
@@ -60,7 +54,7 @@ def get_response(prompt: str) -> str:
         response = query_engine.query(prompt)
     msg = response.response
     scripture_info = corelib.SCRIPTURE_MAPPING[get_source_str()]
-    sourcestr = (f"\n\nReferences:\n---\n")
+    sourcestr = (f"\n\n**References:**\n\n")
     for i, source in enumerate(response.source_nodes):
         scripture_info = corelib.get_scripture_from_source_metadata(
             source.node.metadata)
@@ -117,12 +111,15 @@ def suggestion_clicked(question, answer):
     chat_container.chat_message("assistant").write(answer)
     # generate_response(chat_container, question)
 
-
 def share(question, answer):
-    thread_id = mongo_utils.post_thread(mongo_client, question, answer)
+    with st.spinner("Creating share URL 🔗 "):
+        thread_id = mongo_utils.post_thread(mongo_client, question, answer)
+
     url = f"{constants.SITE_BASE_URL}/forum?thread_id={thread_id}"
-    st.toast("Question posted to forum.")
-    st.link_button("Post URL 🔗", url)
+    st.markdown(f" 🔗 Share [link]({url}) created successfully.")
+    result = social_share_widget(question['content'], answer["content"][:500]+"...", url)
+    if result == "copy": # Not working. As this function does not execute during rerun.
+        st.toast("Text copied to clipboard.")
 
     # st.toast(":green[**Posted your question and answer to forum.**]")
 
