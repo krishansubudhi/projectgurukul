@@ -57,8 +57,8 @@ class SocialShareWidget extends StreamlitComponentBase {
   };
 
   private shareOnFacebook = () => {
-    const formattedMessage = encodeURIComponent(this.formatMarkdown());
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${formattedMessage}`);
+    const formattedUrl = encodeURIComponent(this.url);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${formattedUrl}`);
   };
 
   private copyToClipboard = () => {
