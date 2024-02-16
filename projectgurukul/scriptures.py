@@ -7,11 +7,8 @@ from typing import Callable, Tuple, Any
 from projectgurukul.readers import CSVReader, RamayanaCSVReader
 
 
-
-
 def load_scripture_basics(directory):
     return SimpleDirectoryReader(input_dir=directory).load_data()
-
 
 
 class Scripture(ABC):
@@ -30,17 +27,16 @@ class Scripture(ABC):
         ...
 
 
-
 class Gita(Scripture):
     ID = "gita"
     NAME = "Bhagavad Gita"
     DIRECTORY = "gita"
     METADATAS_TO_DISPLAY = ('chapter', 'verse', 'source')
     DESCRIPTION = ("Datasource for Bhagavad Gita - a sacred Hindu scripture that is part"
-        " of the Indian epic Mahabharata. It consists of a conversation between"
-        " Prince Arjuna and the god Krishna, who serves as his charioteer."
-        " Explore insights, chapters, verses, and the profound teachings of the Gita."
-        )
+                   " of the Indian epic Mahabharata. It consists of a conversation between"
+                   " Prince Arjuna and the god Krishna, who serves as his charioteer."
+                   " Explore insights, chapters, verses, and the profound teachings of the Gita."
+                   )
 
     def load(self, directory):
         def preprocess(row):
@@ -48,10 +44,10 @@ class Gita(Scripture):
             return row
 
         reader = CSVReader(text_columns=['verse_in_sanskrit', 'translation_in_english',
-                                        'meaning_in_english'], metadata_columns=['chapter', 'verse'], preprocess=preprocess)
+                                         'meaning_in_english'], metadata_columns=['chapter', 'verse'], preprocess=preprocess)
         documents = SimpleDirectoryReader(
             input_dir=directory, file_extractor={".csv": reader}).load_data()
-        
+
         for document in documents:
             document.metadata["id"] = self.ID
         return documents
@@ -74,6 +70,7 @@ class Gita(Scripture):
         else:
             return str(metadata)
 
+
 class Ramayana(Scripture):
     ID = "ramayana"
     NAME = "Valmiki Ramayana"
@@ -87,9 +84,9 @@ class Ramayana(Scripture):
         " the powerful and complex character of Ravana, the demon king of Lanka."
         " Discover the intricate details of Ravana's role and impact in the Ramayana story."
     )
-    KANDA_MAPPINGS={
-        "bala":1,
-        "ayodhya":2,
+    KANDA_MAPPINGS = {
+        "bala": 1,
+        "ayodhya": 2,
         "aranya": 3,
         "kishkinda": 4,
         "sundara": 5,
@@ -105,7 +102,6 @@ class Ramayana(Scripture):
                 0].replace("kanda", " kanda")
             document.metadata["id"] = self.ID
         return documents
-
 
     def create_source_link(self, metadata: Dict[str, str]) -> str:
 

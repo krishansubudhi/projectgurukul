@@ -11,5 +11,4 @@ pymongo
 st-pages==0.4.5
 streamlit-disqus
 spacy
-rank-bm25
-streamlit-component-lib
+angle_emb

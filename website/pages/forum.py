@@ -11,13 +11,10 @@ from streamlit_components import social_share_widget
 if 'question' not in st.session_state:
     st.set_page_config(page_title='Gurukul Forum', page_icon=":books:", layout="centered")
 else:
-    print("session state contains question.")
     st.set_page_config(page_title=st.session_state["question"], page_icon="❓", layout="centered")
 
 def render_forum():
     mongo_client = mongo_utils.get_mongo_client()
-    with st.sidebar:
-        st.markdown(footer_html, unsafe_allow_html=True)
     threads = mongo_utils.read_forum_data(mongo_client)
     with st.container(border=False):
         for thread in threads:
@@ -57,7 +54,8 @@ def show_thread(mongo_client, thread: mongo_utils.ForumThread):
                                     "{} - {}> {}".format(comment.userid, comment.post_date, comment.comment))
                     st.toast(":green[☝️ Your comment was successfully posted.]")
 
-
+with st.sidebar:
+    st.markdown(footer_html, unsafe_allow_html=True)
 all_params = st.query_params.to_dict()
 # print(all_params)
 if 'thread_id' not in all_params:
