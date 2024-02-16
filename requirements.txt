@@ -6,9 +6,9 @@ transformers[torch]
 InstructorEmbedding
 sentence_transformers
 argparse
-streamlit==1.30.0
+streamlit
 pymongo
-st-pages==0.4.5
+st-pages
 streamlit-disqus
 spacy
 angle_emb

@@ -1,7 +1,3 @@
-from llama_index.selectors.pydantic_selectors import (
-    PydanticMultiSelector,
-    PydanticSingleSelector,
-)
 from llama_index.llms import OpenAI
 from llama_index.embeddings import OpenAIEmbedding
 import os
@@ -100,6 +96,9 @@ def get_query_engines(scripture, is_offline, data_dir="data"):
 
 
 def get_router_query_engine(scriptures, is_offline, data_dir="data"):
+    from llama_index.selectors.pydantic_selectors import (
+        PydanticMultiSelector
+    )
     query_engine_tools = []
     for scripture in scriptures:
         query_engine = get_query_engines(scripture, is_offline, data_dir)
