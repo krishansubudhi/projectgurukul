@@ -1,15 +1,10 @@
-from llama_index.llms import OpenAI
-from llama_index.embeddings import OpenAIEmbedding
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.openai import OpenAIEmbedding
 import os
-from llama_index import (
-    VectorStoreIndex,
-    StorageContext,
-    load_index_from_storage,
-    ServiceContext,
-    set_global_service_context,
-    global_service_context,
-    Response,
-)
+
+from llama_index.storage import StorageContext
+from llama_index.indices import VectorStoreIndex, load_index_from_storage
+from llama_index import Response, ServiceContext, set_global_service_context
 from llama_index.tools.query_engine import QueryEngineTool
 from llama_index.query_engine.router_query_engine import RouterQueryEngine
 from llama_index.retrievers import QueryFusionRetriever
