@@ -15,8 +15,10 @@ from llama_index import (
 )
 from llama_index.tools.query_engine import QueryEngineTool
 from llama_index.query_engine.router_query_engine import RouterQueryEngine
-from llama_index.retrievers import QueryFusionRetriever, BM25Retriever
+from llama_index.retrievers import QueryFusionRetriever
+from llama_index.retrievers.fusion_retriever import FUSION_MODES
 from llama_index.query_engine import RetrieverQueryEngine
+from projectgurukul.custom_models import embedders, llms
 import dotenv
 import logging
 import os.path
@@ -51,21 +53,20 @@ def setup_service_context(is_offline):
     if is_offline:
         print("Using offline local models.")
 
-        # Avoids unnecessary logs in online mode
-        from projectgurukul.custom_models import embedders, llms
-
-        instructor_embeddings = embedders.InstructorEmbeddings(
+        # instructor_embeddings = embedders.InstructorEmbeddings(
+        #     embed_batch_size=1)
+        angle_embeddings = embedders.AngleUAEEmbeddings(
             embed_batch_size=1)
-        llm = llms.get_phi2_llm()  # llms.get_tinyllama_llm(system_prompt= SYSTEM_PROMPT)
+        # llm = llms.get_phi2_llm()  # llms.get_tinyllama_llm(system_prompt= SYSTEM_PROMPT)
         service_context = ServiceContext.from_defaults(
-            chunk_size=512, llm=llm, context_window=2048, embed_model=instructor_embeddings)
+            chunk_size=512, context_window=4000, embed_model=angle_embeddings)  # , llm=llm
         set_global_service_context(service_context)
-        storage_dir = '.storage_instructembed'
-        similarity_top_k = 1
+        storage_dir = '.storage_angle'
+        similarity_top_k = 5
     else:
         print("Using openAI models")
         # gpt-4-1106-preview, "gpt-3.5-turbo-1106"
-        llm = OpenAI(model="gpt-3.5-turbo", max_retries = 1, timeout=40)
+        llm = OpenAI(model="gpt-3.5-turbo", max_retries=1, timeout=40)
         service_context = ServiceContext.from_defaults(llm=llm)
         set_global_service_context(service_context)
         storage_dir = '.storage'
@@ -140,9 +141,9 @@ def get_fusion_retriever(scriptures, is_offline, data_dir="data"):
     retriever = QueryFusionRetriever(
         retrievers=retrievers,
         similarity_top_k=similarity_top_k,
-        mode="simple",  # TODO:Experiment with reciprocal rank
-        num_queries=1,  # set this to 1 to disable query generation
-        use_async=False,
+        mode=FUSION_MODES.SIMPLE,  # TODO:Experiment with reciprocal rank
+        num_queries=2,  # set this to 1 to disable query generation
+        use_async=True,
         verbose=True
         # query_gen_prompt="...",  # we could override the query generation prompt here
     )
@@ -160,7 +161,8 @@ def get_fusion_query_engine(scriptures, is_offline, data_dir="data"):
 def get_fusion_query_engine_trained_model(scriptures, is_offline, data_dir="data"):
     retriever = get_fusion_retriever(scriptures, is_offline, data_dir)
     trained_model_service_context = ServiceContext.from_defaults(
-        llm=OpenAI(model="ft:gpt-3.5-turbo-1106:macro-mate::8jTl73oZ", max_retries = 1, timeout=30)
+        llm=OpenAI(model="ft:gpt-3.5-turbo-1106:macro-mate::8jTl73oZ",
+                   max_retries=1, timeout=30)
     )
     query_engine_trained_model = RetrieverQueryEngine.from_args(
         retriever,

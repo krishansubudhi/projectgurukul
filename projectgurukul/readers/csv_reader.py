@@ -97,14 +97,21 @@ class RamayanaCSVReader(CSVReader):
         pass
     def load_data(self, file, extra_info=None):
         df = pd.read_csv(file).dropna(how="all").fillna("")
-        ids = df.content.map(lambda shloka: re.findall(r'.*(\d+\.\d+\.\d+).*',shloka)[0])
-        df["sarga"] = ids.map(lambda id: id.split(".")[1])
+        ids = df.content.map(lambda shloka: re.findall(r'.*(\d+\.\d+\.\d+).*',shloka))
+        df["shloka_ids"] = ids.map(lambda ids: ", ".join(ids))
+        df["sarga"] = ids.map(lambda ids: int(ids[0].split(".")[1]))
 
         df["shloka_with_explanation"] = df.apply(
             lambda row: f"{row.content}\n {row.explanation}",
             axis = 1
         )
+
+        df["explanation_with_id"] = df.apply(
+            lambda row: f"{row.explanation} ।।{row.shloka_ids}।।",
+            axis = 1
+        )
         df_grouped = df.groupby('sarga').agg(lambda lst: "\n\n".join(lst)).reset_index()
+        print(df_grouped.sarga.values)
         documents = []
 
         for _, row in df_grouped.iterrows():
@@ -112,13 +119,20 @@ class RamayanaCSVReader(CSVReader):
             shlokas = row['content']
             english_expl = row['explanation']
             shloka_with_explanation = row['shloka_with_explanation']
+            explanation_with_id = row['explanation_with_id']
+
             metadata = {
                 'sarga': sarga
             }
 
+
+            if shlokas[0] == "[":
+                metadata['summary'] = shlokas.split("]")[0][1:]
+
             if extra_info:
                 metadata.update(extra_info)
 
-            documents.append(Document(text=shloka_with_explanation, extra_info=metadata))
+            # documents.append(Document(text=shloka_with_explanation, extra_info=metadata))
+            documents.append(Document(text=explanation_with_id, extra_info=metadata))
 
         return documents

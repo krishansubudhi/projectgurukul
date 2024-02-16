@@ -1,18 +1,7 @@
 from llama_index.llms import HuggingFaceLLM, ChatMessage
 from llama_index.prompts import PromptTemplate
-import torch
+from projectgurukul.custom_models import model_utils
 import logging
-
-def get_device_and_dtype():
-    if torch.backends.mps.is_available():
-        torch.mps.empty_cache()
-        device = "mps"
-        dtype = torch.float16
-    else:
-        device = "auto"
-        dtype = "auto"
-    return device, dtype
-
 
 def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256, system_prompt = ""):
     def messages_to_prompt(messages: ChatMessage):
@@ -25,7 +14,7 @@ def get_tinyllama_llm(context_window = 2048, max_new_tokens = 256, system_prompt
         return prompt
 
 
-    device, dtype = get_device_and_dtype()
+    device, dtype = model_utils.get_device_and_dtype()
 
     # This will wrap the default prompts that are internal to llama-index
     query_wrapper_prompt = PromptTemplate(
@@ -65,7 +54,7 @@ def get_phi2_llm(context_window = 2048, max_new_tokens = 256, system_prompt = ""
         prompt += "Response ::"
         logging.debug(prompt)
         return prompt
-    device, dtype = get_device_and_dtype()
+    device, dtype = model_utils.get_device_and_dtype()
 
     # This will wrap the default prompts that are internal to llama-index
     query_wrapper_prompt = PromptTemplate("Instruct: {query_str}\nOutput: ")

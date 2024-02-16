@@ -27,7 +27,7 @@ mongo_client = mongo_utils.get_mongo_client()
 
 @st.cache_resource
 def load_query_engine(scriptures):
-    return get_fusion_query_engine_trained_model(scriptures=scriptures, is_offline=False, data_dir="data")
+    return get_fusion_query_engine_trained_model(scriptures=scriptures, is_offline=True, data_dir="data")
 
 
 def get_source_str():
