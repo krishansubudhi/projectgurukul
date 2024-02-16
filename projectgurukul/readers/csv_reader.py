@@ -127,7 +127,7 @@ class RamayanaCSVReader(CSVReader):
 
 
             if shlokas[0] == "[":
-                metadata['summary'] = shlokas.split("]")[0][1:]
+                metadata['summary'] = shlokas.split("]")[0][1:][:200]
 
             if extra_info:
                 metadata.update(extra_info)

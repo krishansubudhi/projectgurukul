@@ -3,6 +3,7 @@ from llama_index.selectors.pydantic_selectors import (
     PydanticSingleSelector,
 )
 from llama_index.llms import OpenAI
+from llama_index.embeddings import OpenAIEmbedding
 import os
 from llama_index import (
     VectorStoreIndex,
@@ -55,21 +56,21 @@ def setup_service_context(is_offline):
 
         # instructor_embeddings = embedders.InstructorEmbeddings(
         #     embed_batch_size=1)
-        angle_embeddings = embedders.AngleUAEEmbeddings(
-            embed_batch_size=1)
+        angle_embedder = embedders.AngleUAEEmbeddings()
         # llm = llms.get_phi2_llm()  # llms.get_tinyllama_llm(system_prompt= SYSTEM_PROMPT)
         service_context = ServiceContext.from_defaults(
-            chunk_size=512, context_window=4000, embed_model=angle_embeddings)  # , llm=llm
+            chunk_size=512, context_window=4000, embed_model=angle_embedder)  # , llm=llm
         set_global_service_context(service_context)
         storage_dir = '.storage_angle'
         similarity_top_k = 5
     else:
         print("Using openAI models")
+        openai_small_embedder = OpenAIEmbedding(model = "text-embedding-3-small")
         # gpt-4-1106-preview, "gpt-3.5-turbo-1106"
         llm = OpenAI(model="gpt-3.5-turbo", max_retries=1, timeout=40)
-        service_context = ServiceContext.from_defaults(llm=llm)
+        service_context = ServiceContext.from_defaults(llm=llm, context_window=4000, embed_model=openai_small_embedder)
         set_global_service_context(service_context)
-        storage_dir = '.storage'
+        storage_dir = '.storage_openai'
         similarity_top_k = 3
 
     return storage_dir, similarity_top_k
@@ -142,7 +143,7 @@ def get_fusion_retriever(scriptures, is_offline, data_dir="data"):
         retrievers=retrievers,
         similarity_top_k=similarity_top_k,
         mode=FUSION_MODES.SIMPLE,  # TODO:Experiment with reciprocal rank
-        num_queries=2,  # set this to 1 to disable query generation
+        num_queries=1,  # set this to 1 to disable query generation
         use_async=True,
         verbose=True
         # query_gen_prompt="...",  # we could override the query generation prompt here
