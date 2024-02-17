@@ -111,7 +111,6 @@ class RamayanaCSVReader(CSVReader):
             axis = 1
         )
         df_grouped = df.groupby('sarga').agg(lambda lst: "\n\n".join(lst)).reset_index()
-        print(df_grouped.sarga.values)
         documents = []
 
         for _, row in df_grouped.iterrows():

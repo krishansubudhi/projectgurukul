@@ -6,6 +6,8 @@ from llama_index.core import (
 from typing import Callable, Tuple, Any
 from projectgurukul.readers import CSVReader, RamayanaCSVReader
 
+SCRIPTURE_METADATA_KEY = "scripture"
+
 
 def load_scripture_basics(directory):
     return SimpleDirectoryReader(input_dir=directory).load_data()
@@ -49,7 +51,9 @@ class Gita(Scripture):
             input_dir=directory, file_extractor={".csv": reader}).load_data()
 
         for document in documents:
-            document.metadata["id"] = self.ID
+            document.metadata[SCRIPTURE_METADATA_KEY] = self.ID
+            document.excluded_embed_metadata_keys.extend(["file_path"])
+            document.excluded_llm_metadata_keys.extend(["file_path"])
         return documents
 
     def create_source_link(self, metadata: Dict[str, str]) -> str:
@@ -100,7 +104,9 @@ class Ramayana(Scripture):
         for document in documents:
             document.metadata["kanda"] = document.metadata["file_name"].split('.')[
                 0].replace("kanda", " kanda")
-            document.metadata["id"] = self.ID
+            document.metadata[SCRIPTURE_METADATA_KEY] = self.ID
+            document.excluded_embed_metadata_keys.extend(["file_path"])
+            document.excluded_llm_metadata_keys.extend(["file_path"])
         return documents
 
     def create_source_link(self, metadata: Dict[str, str]) -> str:

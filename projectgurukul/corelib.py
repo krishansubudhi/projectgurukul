@@ -32,16 +32,9 @@ SCRIPTURE_MAPPING = {
     scriptures.Ramayana.ID: scriptures.Ramayana()
 }
 
-# Temporary. find a better way later.
-
-
 def get_scripture_from_source_metadata(metadata: dict[str, str]) -> str:
-    file_path = metadata['file_path']
-    for _, scripture_info in SCRIPTURE_MAPPING.items():
-        if f"/{scripture_info.DIRECTORY}/" in file_path:
-            return scripture_info
-    logging.error(f"No scripture could be inferred for file_path {file_path}.")
-    return None
+    scripture_id = metadata[scriptures.SCRIPTURE_METADATA_KEY]
+    return SCRIPTURE_MAPPING[scripture_id]
 
 
 def setup_service_context(is_offline):
@@ -52,7 +45,7 @@ def setup_service_context(is_offline):
         angle_embedder = embedders.AngleUAEEmbeddings()
         # llm = llms.get_phi2_llm()  # llms.get_tinyllama_llm(system_prompt= SYSTEM_PROMPT)
         service_context = ServiceContext.from_defaults(
-            chunk_size=512, context_window=4000, embed_model=angle_embedder)  # , llm=llm
+            chunk_size=512, chunk_overlap = 100, context_window=4000, embed_model=angle_embedder)  # , llm=llm
         set_global_service_context(service_context)
         storage_dir = '.storage_angle'
         similarity_top_k = 5
@@ -62,10 +55,10 @@ def setup_service_context(is_offline):
         openai_small_embedder = OpenAIEmbedding(model = "text-embedding-3-small")
         # gpt-4-1106-preview, "gpt-3.5-turbo-1106"
         llm = OpenAI(model="gpt-3.5-turbo", max_retries=1, timeout=40)
-        service_context = ServiceContext.from_defaults(llm=llm, context_window=4000, embed_model=openai_small_embedder)
+        service_context = ServiceContext.from_defaults(llm=llm, chunk_size=512, chunk_overlap = 100, context_window=4000, embed_model=openai_small_embedder)
         set_global_service_context(service_context)
         storage_dir = '.storage_openai'
-        similarity_top_k = 3
+        similarity_top_k = 5
 
     return storage_dir, similarity_top_k
 
