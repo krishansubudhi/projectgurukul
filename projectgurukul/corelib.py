@@ -124,10 +124,11 @@ def get_fusion_retriever(scriptures, is_offline, data_dir="data"):
         logging.info("Checking if index is cached in %s", persist_dir)
 
         if not os.path.exists(persist_dir):
+            logging.info("Loading scripture documents ...")
             documents = scripture_info.load(BOOK_DIR + "data")
-            print("Creating one-time document index ...")
+            logging.info("Creating one-time document index ...")
             index = VectorStoreIndex.from_documents(documents)
-            print("Finished creating document index.")
+            logging.info("Finished creating document index.")
             index.storage_context.persist(persist_dir=persist_dir)
         else:
             index = load_index_from_storage(
