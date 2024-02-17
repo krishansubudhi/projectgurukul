@@ -1,5 +1,6 @@
-from llama_index.llms import HuggingFaceLLM, ChatMessage
-from llama_index.prompts import PromptTemplate
+from llama_index.core.llms import ChatMessage
+from llama_index.llms.huggingface import HuggingFaceLLM
+from llama_index.core.prompts import PromptTemplate
 from projectgurukul.custom_models import model_utils
 import logging
 

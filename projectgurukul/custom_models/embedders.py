@@ -1,10 +1,10 @@
 from InstructorEmbedding import INSTRUCTOR
 from typing import Any, List
 from InstructorEmbedding import INSTRUCTOR
-from llama_index.embeddings.base import BaseEmbedding
+from llama_index.core.base.embeddings.base import BaseEmbedding
 
-from llama_index.bridge.pydantic import PrivateAttr
-from llama_index.embeddings.base import BaseEmbedding
+from llama_index.core.bridge.pydantic import PrivateAttr
+from llama_index.core.base.embeddings.base import BaseEmbedding
 from angle_emb import AnglE, Prompts
 
 

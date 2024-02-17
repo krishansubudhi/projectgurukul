@@ -1,5 +1,5 @@
-from llama_index.llms import ChatMessage, MessageRole
-from llama_index.prompts import ChatPromptTemplate
+from llama_index.core.llms import ChatMessage, MessageRole
+from llama_index.core.prompts import ChatPromptTemplate
 
 chat_text_qa_msgs = [
     ChatMessage(

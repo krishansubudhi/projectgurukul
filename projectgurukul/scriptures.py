@@ -1,6 +1,6 @@
 from typing import Callable, Tuple, Dict, Any
 from abc import ABC, abstractmethod
-from llama_index import (
+from llama_index.core import (
     SimpleDirectoryReader,
 )
 from typing import Callable, Tuple, Any

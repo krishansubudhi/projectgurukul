@@ -1,4 +1,5 @@
 llama-index
+llama-index-llms-huggingface
 python-dotenv
 pandas
 pypdf
