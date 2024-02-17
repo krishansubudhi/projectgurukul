@@ -12,12 +12,13 @@ from llama_index.core.query_engine import RouterQueryEngine
 from llama_index.core.retrievers import QueryFusionRetriever
 from llama_index.core.retrievers.fusion_retriever import FUSION_MODES
 from llama_index.core.query_engine import RetrieverQueryEngine
-from projectgurukul.custom_models import embedders, llms
+from projectgurukul.custom_models import embedders
 import dotenv
 import logging
 import os.path
 from projectgurukul import scriptures
 from projectgurukul import prompt_templates
+import logging
 dotenv.load_dotenv('.env')
 
 SYSTEM_PROMPT = """You are answering texts on Hindu scriptures. Always make sure to follow these primary rules:
@@ -45,8 +46,7 @@ def get_scripture_from_source_metadata(metadata: dict[str, str]) -> str:
 
 def setup_service_context(is_offline):
     if is_offline:
-        print("Using offline local models.")
-
+        logging.info("Using offline local models.")
         # instructor_embeddings = embedders.InstructorEmbeddings(
         #     embed_batch_size=1)
         angle_embedder = embedders.AngleUAEEmbeddings()
@@ -56,6 +56,7 @@ def setup_service_context(is_offline):
         set_global_service_context(service_context)
         storage_dir = '.storage_angle'
         similarity_top_k = 5
+        logging.info("Finished loading offline models.")
     else:
         print("Using openAI models")
         openai_small_embedder = OpenAIEmbedding(model = "text-embedding-3-small")
@@ -75,6 +76,7 @@ def get_query_engines(scripture, is_offline, data_dir="data"):
     BOOK_DIR = f"{data_dir}/{scripture_info.DIRECTORY}/"
     print(BOOK_DIR)
     persist_dir = BOOK_DIR + storage_dir
+    logging.info("Checking if index is cached in %s", persist_dir)
 
     if not os.path.exists(persist_dir):
         documents = scripture_info.load(BOOK_DIR + "data")
@@ -114,10 +116,12 @@ def get_router_query_engine(scriptures, is_offline, data_dir="data"):
 def get_fusion_retriever(scriptures, is_offline, data_dir="data"):
     retrievers = []
     storage_dir, similarity_top_k = setup_service_context(is_offline)
+
     for scripture in scriptures:
         scripture_info = SCRIPTURE_MAPPING[scripture]
         BOOK_DIR = f"{data_dir}/{scripture_info.DIRECTORY}/"
         persist_dir = BOOK_DIR + storage_dir
+        logging.info("Checking if index is cached in %s", persist_dir)
 
         if not os.path.exists(persist_dir):
             documents = scripture_info.load(BOOK_DIR + "data")
