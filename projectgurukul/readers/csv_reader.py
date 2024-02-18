@@ -135,3 +135,29 @@ class RamayanaCSVReader(CSVReader):
             documents.append(Document(text=explanation_with_id, extra_info=metadata))
 
         return documents
+
+class MahabharataCSVReader(CSVReader):
+    def __init__(self):
+        pass
+    def load_data(self, file, extra_info=None):
+        df = pd.read_csv(file)
+        documents = []
+        parva_id_map = dict(zip(*[iter(df['parva'].unique()), iter(range(0,df.size))]))
+
+        for _, row in df.iterrows():
+            parva = row['parva']
+            parva_id = parva_id_map[parva]
+            chapter_id = row['chapter']
+            chapter_title = row['chapter title']
+            content = row['content']
+
+            metadata = {
+                'parva_id' : parva_id,
+                'parva': parva,
+                'chapter_id':chapter_id,
+                'chapter_title':chapter_title
+            }
+
+            documents.append(Document(text=content, extra_info=metadata))
+
+        return documents

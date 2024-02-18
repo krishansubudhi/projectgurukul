@@ -4,7 +4,7 @@ from llama_index.core import (
     SimpleDirectoryReader,
 )
 from typing import Callable, Tuple, Any
-from projectgurukul.readers import CSVReader, RamayanaCSVReader
+from projectgurukul.readers import CSVReader, RamayanaCSVReader, MahabharataCSVReader
 
 SCRIPTURE_METADATA_KEY = "scripture"
 
@@ -129,3 +129,37 @@ class Ramayana(Scripture):
             return f"[{self.NAME}: {kanda} Kanda, Sarga {sarga}]({link})"
         else:
             return str(metadata)
+
+
+class Mahabharata(Scripture):
+    ID = "mahabharata"
+    NAME = "Mahabharata"
+    DIRECTORY = "mahabharata"
+    METADATAS_TO_DISPLAY = ('Parva', 'Chapter', 'source')
+    DESCRIPTION = (
+        ""
+    )
+
+    def load(self, directory):
+        reader = MahabharataCSVReader()
+        documents = SimpleDirectoryReader(
+            input_dir=directory, file_extractor={".csv": reader}).load_data()
+        return documents
+
+    def create_source_link(self, metadata: Dict[str, str]) -> str:
+        if 'parva_id' in metadata and 'chapter_id' in metadata:
+            parva_id = metadata['parva'].zfill(2)
+            chapter_id = metadata['chapter_id'].zfill(3)
+            return f"https://sacred-texts.com/hin/m{parva_id}/m{parva_id}{chapter_id}.htm"
+        else:
+            return None
+
+    def get_reference_string(self, metadata: Dict[str, str]) -> str:
+        if 'parva' in metadata and 'chapter_title' in metadata:
+            parva = metadata['parva'].strip().capitalize()
+            chapter_title = metadata['chapter_title'].strip().capitalize
+            link = self.create_source_link(metadata)
+            return f"[{self.NAME}: {parva}, Chapter: {chapter_title}]({link})"
+        else:
+            return str(metadata)
+
