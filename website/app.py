@@ -93,7 +93,7 @@ with st.sidebar:
         key='source',
         default=['gita', 'ramayana'],
         on_change=update_source_query_engine,
-        options=['gita', 'ramayana'])
+        options=['gita', 'ramayana','mahabharata'])
 
     st.markdown(footer_html, unsafe_allow_html=True)
 

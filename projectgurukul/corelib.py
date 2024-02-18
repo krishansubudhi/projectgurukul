@@ -29,7 +29,8 @@ SYSTEM_PROMPT = """You are answering texts on Hindu scriptures. Always make sure
 
 SCRIPTURE_MAPPING = {
     scriptures.Gita.ID: scriptures.Gita(),
-    scriptures.Ramayana.ID: scriptures.Ramayana()
+    scriptures.Ramayana.ID: scriptures.Ramayana(),
+    scriptures.Mahabharata.ID: scriptures.Mahabharata()
 }
 
 def get_scripture_from_source_metadata(metadata: dict[str, str]) -> str:
