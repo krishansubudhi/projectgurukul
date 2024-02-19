@@ -144,20 +144,26 @@ class Mahabharata(Scripture):
         reader = MahabharataCSVReader()
         documents = SimpleDirectoryReader(
             input_dir=directory, file_extractor={".csv": reader}).load_data()
+        for document in documents:
+            document.metadata[SCRIPTURE_METADATA_KEY] = self.ID
+            document.excluded_embed_metadata_keys.extend(["file_path"])
+            document.excluded_llm_metadata_keys.extend(["file_path"])
+            document.excluded_embed_metadata_keys.extend(["parva_id"])
+            document.excluded_llm_metadata_keys.extend(["parva_id"])
         return documents
 
     def create_source_link(self, metadata: Dict[str, str]) -> str:
-        if 'parva_id' in metadata and 'chapter_id' in metadata:
-            parva_id = metadata['parva'].zfill(2)
-            chapter_id = metadata['chapter_id'].zfill(3)
-            return f"https://sacred-texts.com/hin/m{parva_id}/m{parva_id}{chapter_id}.htm"
+        if 'parva_id' in metadata and 'parva' in metadata:
+            parva_id = metadata['parva_id'].zfill(2)
+            parva = metadata["parva"]
+            return f"https://en.wikisource.org/wiki/The_Mahabharata/Book_{parva_id}:_{parva.replace(' ','_')}"
         else:
             return None
 
     def get_reference_string(self, metadata: Dict[str, str]) -> str:
         if 'parva' in metadata and 'chapter_title' in metadata:
             parva = metadata['parva'].strip().capitalize()
-            chapter_title = metadata['chapter_title'].strip().capitalize
+            chapter_title = metadata['chapter_title'].strip().capitalize()
             link = self.create_source_link(metadata)
             return f"[{self.NAME}: {parva}, Chapter: {chapter_title}]({link})"
         else:
