@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from llama_index.core import (
     SimpleDirectoryReader,
 )
-from urllib.parse import quote
 from typing import Callable, Tuple, Any
 from projectgurukul.readers import CSVReader, RamayanaCSVReader, MahabharataCSVReader
 
