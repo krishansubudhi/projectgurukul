@@ -142,9 +142,11 @@ class MahabharataCSVReader(CSVReader):
     def load_data(self, file, extra_info=None):
         df = pd.read_csv(file)
         documents = []
-        parva_id_map = dict(zip(*[iter(df['parva'].unique()), iter(range(0,df.size))]))
 
-        for _, row in df.iterrows():
+        df_grouped = df.groupby(['parva', 'chapter', 'chapter title']).agg(lambda lst: "\n\n".join(lst)).reset_index()
+        parva_id_map = dict(zip(*[iter(df_grouped['parva'].unique()), iter(range(0,df_grouped.size))]))
+
+        for _, row in df_grouped.iterrows():
             parva = row['parva']
             parva_id = parva_id_map[parva]
             chapter_id = row['chapter']

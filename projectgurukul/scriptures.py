@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from llama_index.core import (
     SimpleDirectoryReader,
 )
+from urllib.parse import quote
 from typing import Callable, Tuple, Any
 from projectgurukul.readers import CSVReader, RamayanaCSVReader, MahabharataCSVReader
 
@@ -144,6 +145,12 @@ class Mahabharata(Scripture):
         reader = MahabharataCSVReader()
         documents = SimpleDirectoryReader(
             input_dir=directory, file_extractor={".csv": reader}).load_data()
+        for document in documents:
+            document.metadata[SCRIPTURE_METADATA_KEY] = self.ID
+            document.excluded_embed_metadata_keys.extend(["file_path"])
+            document.excluded_llm_metadata_keys.extend(["file_path"])
+            document.excluded_embed_metadata_keys.extend(["parva_id"])
+            document.excluded_llm_metadata_keys.extend(["parva_id"])
         return documents
 
     def create_source_link(self, metadata: Dict[str, str]) -> str:
@@ -157,7 +164,7 @@ class Mahabharata(Scripture):
     def get_reference_string(self, metadata: Dict[str, str]) -> str:
         if 'parva' in metadata and 'chapter_title' in metadata:
             parva = metadata['parva'].strip().capitalize()
-            chapter_title = metadata['chapter_title'].strip().capitalize
+            chapter_title = metadata['chapter_title'].strip().capitalize()
             link = self.create_source_link(metadata)
             return f"[{self.NAME}: {parva}, Chapter: {chapter_title}]({link})"
         else:
