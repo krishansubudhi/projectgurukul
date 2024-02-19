@@ -154,7 +154,7 @@ class Mahabharata(Scripture):
 
     def create_source_link(self, metadata: Dict[str, str]) -> str:
         if 'parva_id' in metadata and 'parva' in metadata:
-            parva_id = metadata['parva_id'].zfill(2)
+            parva_id = metadata['parva_id']
             parva = metadata["parva"]
             return f"https://en.wikisource.org/wiki/The_Mahabharata/Book_{parva_id}:_{parva.replace(' ','_')}"
         else:
