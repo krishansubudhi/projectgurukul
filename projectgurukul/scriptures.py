@@ -133,9 +133,9 @@ class Ramayana(Scripture):
 
 class Mahabharata(Scripture):
     ID = "mahabharata"
-    NAME = "Mahabharata"
+    NAME = "mahabharata"
     DIRECTORY = "mahabharata"
-    METADATAS_TO_DISPLAY = ('Parva', 'Chapter', 'source')
+    METADATAS_TO_DISPLAY = ('parva', 'chapter', 'source')
     DESCRIPTION = (
         ""
     )
