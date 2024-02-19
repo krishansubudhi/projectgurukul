@@ -144,7 +144,7 @@ class MahabharataCSVReader(CSVReader):
         documents = []
 
         df_grouped = df.groupby(['parva', 'chapter', 'chapter title']).agg(lambda lst: "\n\n".join(lst)).reset_index()
-        parva_id_map = dict(zip(*[iter(df_grouped['parva'].unique()), iter(range(0,df_grouped.size))]))
+        parva_id_map = dict(zip(*[iter(df_grouped['parva'].unique()), iter(range(1, df_grouped.size + 1))]))
 
         for _, row in df_grouped.iterrows():
             parva = row['parva']
