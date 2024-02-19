@@ -91,7 +91,7 @@ with st.sidebar:
     options = st.multiselect(
         label='Select Sources of Vedic Scripture',
         key='source',
-        default=['gita', 'ramayana','mahabharata'],
+        default=['gita', 'ramayana'],
         on_change=update_source_query_engine,
         options=['gita', 'ramayana','mahabharata'])
 
