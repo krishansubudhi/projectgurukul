@@ -160,6 +160,6 @@ class MahabharataCSVReader(CSVReader):
                 'chapter_title':chapter_title
             }
 
-            documents.append(Document(text=content, extra_info=metadata))
+            documents.append(Document(doc_id=str(parva_id)+"."+ chapter_id, text=content, extra_info=metadata))
 
         return documents

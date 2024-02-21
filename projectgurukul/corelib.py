@@ -72,19 +72,20 @@ def get_query_engines(scripture, is_offline, data_dir="data"):
     persist_dir = BOOK_DIR + storage_dir
     logging.info("Checking if index is cached in %s", persist_dir)
 
-    if not os.path.exists(persist_dir):
-        documents = scripture_info.load(BOOK_DIR + "data")
-        print("Creating one-time document index ...")
-        # TODO: Also add a KeywordStoreIndex
-        # https://docs.llamaindex.ai/en/stable/examples/query_engine/RouterQueryEngine.html
-        index = VectorStoreIndex.from_documents(documents)
-        print("Finished creating document index.")
-        index.storage_context.persist(persist_dir=persist_dir)
-    else:
-        print(f"loading from stored index {persist_dir}")
-        storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
-        index = load_index_from_storage(storage_context)
-    query_engine = index.as_query_engine(similarity_top_k=similarity_top_k)
+    # if not os.path.exists(persist_dir):
+    #     documents = scripture_info.load(BOOK_DIR + "data")
+    #     print("Creating one-time document index ...")
+    #     # TODO: Also add a KeywordStoreIndex
+    #     # https://docs.llamaindex.ai/en/stable/examples/query_engine/RouterQueryEngine.html
+    #     index = VectorStoreIndex.from_documents(documents)
+    #     print("Finished creating document index.")
+    #     index.storage_context.persist(persist_dir=persist_dir)
+    # else:
+    #     print(f"loading from stored index {persist_dir}")
+    #     storage_context = StorageContext.from_defaults(persist_dir=persist_dir)
+    #     index = load_index_from_storage(storage_context)
+    # query_engine = index.as_query_engine(similarity_top_k=similarity_top_k)
+    
     return query_engine
 
 
