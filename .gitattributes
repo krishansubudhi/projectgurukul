@@ -2,4 +2,3 @@ data/gita/.storage_openai/*.json filter=lfs diff=lfs merge=lfs -text
 data/ramayana/.storage_openai/*.json filter=lfs diff=lfs merge=lfs -text
 # data/gita/.storage_instructembed/*.json filter=lfs diff=lfs merge=lfs -text
 # data/ramayana/.storage_instructembed/*.json filter=lfs diff=lfs merge=lfs -text
-*.storage* filter=lfs diff=lfs merge=lfs -text

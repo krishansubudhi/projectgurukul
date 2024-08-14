@@ -30,7 +30,6 @@ https://git-lfs.com
 ```
 brew install git-lfs
 git lfs install
-git lfs track "*.storage*"
 git add .gitattributes
 
 git lfs ls-files
