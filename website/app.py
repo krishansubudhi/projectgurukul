@@ -130,8 +130,29 @@ def share(question, answer):
     # st.toast(":green[**Posted your question and answer to forum.**]")
 
 
-def render():
+def render()
+
+
+
+import streamlit as st
+def test_get_response():
+    """
+    Test function for get_response
+    """
+    import unittest.mock as mock
+    from projectgurukul import corelib
+    corelib.get_empty_response = mock.Mock(return_value = "This is test response")
+    mock_query_engine = mock.Mock()
+    st.session_state['curr_query_engine'] = mock_query_engine
+    prompt = "What is the meaning of life?"
+    response = get_response(prompt)
+    assert response is not None
+
+:
+
     if "messages" not in st.session_state:
+        test_get_response()
+
         st.session_state["messages"] = [
             {"role": "assistant", "content": "Ask me anything about life ?"}]
 
