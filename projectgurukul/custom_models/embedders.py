@@ -49,19 +49,18 @@ class AngleUAEEmbeddings(BaseEmbedding):
     ) -> None:
         super().__init__(**kwargs)
         self._model = AnglE.from_pretrained('WhereIsAI/UAE-Large-V1', pooling_strategy='cls').cuda()
-        self._model.set_prompt(prompt=Prompts.C)
 
     def _get_query_embedding(self, query: str) -> List[float]:
-        embeddings = self._model.encode({'text': query}, to_numpy=True)
+        embeddings = self._model.encode({'text': query}, to_numpy=True, prompt=Prompts.C)
         return embeddings[0].tolist()
     
     async def _aget_query_embedding(self, query: str) -> List[float]:
         return self._get_query_embedding(query)
 
     def _get_text_embedding(self, text: str) -> List[float]:
-        embeddings = self._model.encode({'text': text})
+        embeddings = self._model.encode(text)
         return embeddings[0].tolist() 
     
     def _get_text_embeddings(self, texts: List[str]) -> List[List[float]]:
-        embeddings = self._model.encode([{'text': text} for text in texts])
+        embeddings = self._model.encode(texts)
         return embeddings.tolist()

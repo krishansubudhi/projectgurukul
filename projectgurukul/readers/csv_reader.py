@@ -131,8 +131,8 @@ class RamayanaCSVReader(CSVReader):
             if extra_info:
                 metadata.update(extra_info)
 
-            # documents.append(Document(text=shloka_with_explanation, extra_info=metadata))
-            documents.append(Document(text=explanation_with_id, extra_info=metadata))
+            documents.append(Document(text=shloka_with_explanation, extra_info=metadata))
+            # documents.append(Document(text=explanation_with_id, extra_info=metadata))
 
         return documents
 

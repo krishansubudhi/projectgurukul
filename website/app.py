@@ -9,7 +9,8 @@ from website import mongo_utils
 from projectgurukul import corelib
 import streamlit.components.v1 as components
 from website.footer import footer_html
-from st_pages import Page, show_pages
+from st_pages import add_page_title, get_nav_from_toml
+
 import streamlit as st
 
 from streamlit_components import social_share_widget
@@ -27,7 +28,7 @@ mongo_client = mongo_utils.get_mongo_client()
 
 @st.cache_resource
 def load_query_engine(scriptures):
-    return get_fusion_query_engine_trained_model(scriptures=scriptures, is_offline=False, data_dir="data")
+    return get_fusion_query_engine_trained_model(scriptures=scriptures, is_offline=True, data_dir="data")
 
 
 def get_source_str():

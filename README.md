@@ -17,7 +17,7 @@ You can contribute by testing this library, adding more scriptures, creating PRs
 
 ## Conda Environment
 ```
-conda create -n gurukul python=3.11
+conda create -n gurukul python=3.10
 conda activate gurukul
 conda install pip
 pip install -r requirements.txt

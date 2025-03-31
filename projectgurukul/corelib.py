@@ -1,3 +1,4 @@
+from llama_index.core import Settings
 from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.openai import OpenAIEmbedding
 import os
@@ -45,9 +46,13 @@ def setup_service_context(is_offline):
         #     embed_batch_size=1)
         angle_embedder = embedders.AngleUAEEmbeddings()
         # llm = llms.get_phi2_llm()  # llms.get_tinyllama_llm(system_prompt= SYSTEM_PROMPT)
-        service_context = ServiceContext.from_defaults(
-            chunk_size=512, chunk_overlap = 100, context_window=4000, embed_model=angle_embedder)  # , llm=llm
-        set_global_service_context(service_context)
+        Settings.embed_model = angle_embedder
+        Settings.context_window = 4000
+        Settings.chunk_size = 512
+        Settings.chunk_overlap = 100
+        # service_context = ServiceContext.from_defaults(
+        #     chunk_size=512, chunk_overlap = 100, context_window=4000, embed_model=angle_embedder)  # , llm=llm
+        # set_global_service_context(service_context)
         storage_dir = '.storage_angle'
         similarity_top_k = 5
         logging.info("Finished loading offline models.")
@@ -56,8 +61,14 @@ def setup_service_context(is_offline):
         openai_small_embedder = OpenAIEmbedding(model = "text-embedding-3-small")
         # gpt-4-1106-preview, "gpt-3.5-turbo-1106"
         llm = OpenAI(model="gpt-3.5-turbo", max_retries=1, timeout=40)
-        service_context = ServiceContext.from_defaults(llm=llm, chunk_size=512, chunk_overlap = 100, context_window=4000, embed_model=openai_small_embedder)
-        set_global_service_context(service_context)
+        # service_context = ServiceContext.from_defaults(llm=llm, chunk_size=512, chunk_overlap = 100, context_window=4000, embed_model=openai_small_embedder)
+        # set_global_service_context(service_context)        
+        Settings.llm = llm
+        Settings.embed_model = openai_small_embedder
+        Settings.context_window = 4000
+        Settings.chunk_size = 512
+        Settings.chunk_overlap = 100
+
         storage_dir = '.storage_openai'
         similarity_top_k = 5
 
@@ -156,14 +167,12 @@ def get_fusion_query_engine(scriptures, is_offline, data_dir="data"):
 
 def get_fusion_query_engine_trained_model(scriptures, is_offline, data_dir="data"):
     retriever = get_fusion_retriever(scriptures, is_offline, data_dir)
-    trained_model_service_context = ServiceContext.from_defaults(
-        llm=OpenAI(model="ft:gpt-3.5-turbo-1106:macro-mate::8jTl73oZ",
+    llm=OpenAI(model="ft:gpt-3.5-turbo-1106:macro-mate::8jTl73oZ",
                    max_retries=1, timeout=30)
-    )
     query_engine_trained_model = RetrieverQueryEngine.from_args(
         retriever,
         text_qa_template=prompt_templates.training_text_qa_template,
-        service_context=trained_model_service_context
+        llm=llm
     )
     return query_engine_trained_model
 
