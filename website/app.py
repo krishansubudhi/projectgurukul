@@ -2,6 +2,7 @@ import sys
 sys.path.append(".")
 import dotenv
 dotenv.load_dotenv(".env")
+import logging
 from website import constants
 from projectgurukul.corelib import (get_query_engines, get_empty_response,
                                     get_fusion_query_engine_trained_model, get_fusion_query_engine, get_router_query_engine)
@@ -134,11 +135,17 @@ def share(question, answer):
 def render():
     if "messages" not in st.session_state:
         st.session_state["messages"] = [
-            {"role": "assistant", "content": "Ask me anything about life ?"}]
+            {"role": "assistant", "content": "Ask me anything about life."}]
 
     if len(st.session_state["messages"]) < 2:
-        suggestion_children.write("Suggestions💡:")
-        random_threads = mongo_utils.get_random_threads(mongo_client)
+        random_threads = []
+        # Fetch random threads from MongoDB to show suggestions
+        try:
+            random_threads = mongo_utils.get_random_threads(mongo_client)
+            suggestion_children.write("Suggestions💡:")
+        except Exception as e:
+            logging.error(
+                f"Error fetching random threads from MongoDB: {e}")
         for thread in random_threads:
             suggestion_children.button(label=thread.question['content'], on_click=suggestion_clicked, type="secondary", args=(
                 thread.question['content'], thread.answer['content']), key=thread._id.int)
@@ -152,14 +159,15 @@ def render():
                     answer = st.session_state.messages[i]
                     if st.button("Share", key=f"share_{i}", type = "primary"):
                         share(question, answer)
-    # clear button to clear context
-    if len(st.session_state.messages) > 1:
-        st.button("Clear All 🗑", on_click=clear_state_messages)
     if prompt := st.chat_input():
         print("Question: ", prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
         chat_container.chat_message('user').write(prompt)
         generate_response(chat_container, prompt)
+
+    # clear button to clear context
+    if len(st.session_state.messages) > 1:
+        st.button("Clear All 🗑", on_click=clear_state_messages)
 
 
 render()
